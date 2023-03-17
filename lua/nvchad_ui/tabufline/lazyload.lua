@@ -1,4 +1,4 @@
-local opts = require("core.utils").load_config().ui.tabufline
+local options = require("nvchad_ui.config").tabufline
 
 -- store listed buffers in tab local var
 vim.t.bufs = vim.api.nvim_list_bufs()
@@ -10,6 +10,7 @@ vim.api.nvim_create_autocmd({ "BufAdd", "BufEnter", "tabnew" }, {
     if vim.t.bufs == nil then
       vim.t.bufs = vim.api.nvim_get_current_buf() == args.buf and {} or { args.buf }
     else
+      ---@type buffer[]
       local bufs = vim.t.bufs
 
       -- check for duplicates
@@ -42,6 +43,7 @@ vim.api.nvim_create_autocmd({ "BufAdd", "BufEnter", "tabnew" }, {
 vim.api.nvim_create_autocmd("BufDelete", {
   callback = function(args)
     for _, tab in ipairs(vim.api.nvim_list_tabpages()) do
+      ---@type buffer[]
       local bufs = vim.t[tab].bufs
       if bufs then
         for i, bufnr in ipairs(bufs) do
@@ -56,9 +58,10 @@ vim.api.nvim_create_autocmd("BufDelete", {
   end,
 })
 
-require("core.utils").load_mappings "tabufline"
+-- TODO: Configure this mapping or give it as options
+-- require("core.utils").load_mappings "tabufline"
 
-if opts.lazyload then
+if options.lazyload then
   vim.api.nvim_create_autocmd({ "BufNewFile", "BufRead", "TabEnter", "TermOpen" }, {
     pattern = "*",
     group = vim.api.nvim_create_augroup("TabuflineLazyLoad", {}),

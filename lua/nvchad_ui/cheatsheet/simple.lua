@@ -1,9 +1,9 @@
-local mappings_tb = require("core.utils").load_config().mappings -- default & user mappings
+local mappings_tb = require("nvchad_ui.config").mappings -- default & user mappings
 
 local api = vim.api
 local genStr = string.rep
 
-dofile(vim.g.base46_cache .. "nvcheatsheet")
+-- dofile(vim.g.base46_cache .. "nvcheatsheet")
 
 vim.api.nvim_create_autocmd("BufWinLeave", {
   callback = function()
@@ -18,6 +18,7 @@ return function()
   local centerPoint = api.nvim_win_get_width(0) / 2
 
   -- convert "<leader>th" to "<leader> + th"
+  ---@param str string
   local function prettify_Str(str)
     local one, two = str:match "([^,]+)>([^,]+)"
     return one and one .. "> + " .. two or str
@@ -47,6 +48,7 @@ return function()
     end
   end
 
+  ---@type table<integer, string>
   local lineNumsDesc = {}
 
   local result = {

@@ -1,6 +1,6 @@
 local fn = vim.fn
-local config = require("core.utils").load_config().ui.statusline
-local sep_style = config.separator_style
+local options = require("nvchad_ui.config").statusline
+local sep_style = options.separator_style
 
 sep_style = (sep_style ~= "round" and sep_style ~= "block") and "block" or sep_style
 
@@ -70,6 +70,7 @@ M.fileInfo = function()
     local devicons_present, devicons = pcall(require, "nvim-web-devicons")
 
     if devicons_present then
+      ---@type string?
       local ft_icon = devicons.get_icon(filename)
       icon = (ft_icon ~= nil and ft_icon) or icon
     end
@@ -99,6 +100,7 @@ M.LSP_progress = function()
     return ""
   end
 
+  ---@type table
   local Lsp = vim.lsp.util.get_progress_messages()[1]
 
   if vim.o.columns < 120 or not Lsp then
@@ -125,9 +127,13 @@ M.LSP_Diagnostics = function()
     return ""
   end
 
+  ---@type integer | string
   local errors = #vim.diagnostic.get(0, { severity = vim.diagnostic.severity.ERROR })
+  ---@type integer | string
   local warnings = #vim.diagnostic.get(0, { severity = vim.diagnostic.severity.WARN })
+  ---@type integer | string
   local hints = #vim.diagnostic.get(0, { severity = vim.diagnostic.severity.HINT })
+  ---@type integer | string
   local info = #vim.diagnostic.get(0, { severity = vim.diagnostic.severity.INFO })
 
   errors = (errors and errors > 0) and ("%#St_lspError#" .. " " .. errors .. " ") or ""
@@ -157,10 +163,11 @@ M.cwd = function()
 end
 
 M.run = function()
+  ---@type table
   local modules = require "nvchad_ui.statusline.minimal"
 
-  if config.overriden_modules then
-    modules = vim.tbl_deep_extend("force", modules, config.overriden_modules())
+  if options.overriden_modules then
+    modules = vim.tbl_deep_extend("force", modules, options.overriden_modules())
   end
 
   return table.concat {

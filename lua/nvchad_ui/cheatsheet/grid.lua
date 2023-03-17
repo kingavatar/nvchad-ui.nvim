@@ -1,7 +1,8 @@
-dofile(vim.g.base46_cache .. "nvcheatsheet")
+-- dofile(vim.g.base46_cache .. "nvcheatsheet")
 
 local nvcheatsheet = vim.api.nvim_create_namespace "nvcheatsheet"
-local mappings_tb = require("core.utils").load_config().mappings
+-- TODO: create option for loading mappings withd default and extra user mappings
+local mappings_tb = require("nvchad_ui.config").mappings
 
 vim.api.nvim_create_autocmd("BufWinLeave", {
   callback = function()
@@ -28,6 +29,7 @@ return function()
   local buf = vim.api.nvim_create_buf(false, true)
 
   -- add left padding (strs) to ascii so it looks centered
+  ---@type string[]
   local ascii_header = vim.tbl_values(ascii)
   local ascii_padding = (vim.api.nvim_win_get_width(0) / 2) - (#ascii_header[1] / 2)
 
@@ -39,6 +41,8 @@ return function()
   vim.api.nvim_buf_set_lines(buf, 0, -1, false, ascii_header)
 
   -- convert "<leader>th" to "<leader> + th"
+  ---@param str string
+  ---@return string
   local function prettify_Str(str)
     local one, two = str:match "([^,]+)>([^,]+)"
     return one and one .. "> + " .. two or str
@@ -123,6 +127,9 @@ return function()
     return res
   end
 
+  --- Append tables
+  ---@param tb1 table<integer, any>
+  ---@param tb2 table<any, any>
   local function append_table(tb1, tb2)
     for _, val in ipairs(tb2) do
       tb1[#tb1 + 1] = val
