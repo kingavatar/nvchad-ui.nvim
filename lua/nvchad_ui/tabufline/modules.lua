@@ -2,7 +2,7 @@ local api = vim.api
 local devicons_present, devicons = pcall(require, "nvim-web-devicons")
 local fn = vim.fn
 
-dofile(vim.g.base46_cache .. "tbline")
+-- dofile(vim.g.base46_cache .. "tbline")
 
 local isBufValid = function(bufnr)
   return vim.api.nvim_buf_is_valid(bufnr) and vim.bo[bufnr].buflisted
@@ -45,6 +45,7 @@ local function getBtnsWidth() -- close, theme toggle btn etc
   local width = 6
   if fn.tabpagenr "$" ~= 1 then
     width = width + ((3 * fn.tabpagenr "$") + 2) + 10
+    ---@type integer
     width = not vim.g.TbTabsToggled and 8 or width
   end
   return width
@@ -52,6 +53,7 @@ end
 
 local function add_fileInfo(name, bufnr)
   if devicons_present then
+    ---@type string, string
     local icon, icon_hl = devicons.get_icon(name, string.match(name, "%a+$"))
 
     if not icon then
@@ -68,16 +70,16 @@ local function add_fileInfo(name, bufnr)
     for _, value in ipairs(vim.t.bufs) do
       if isBufValid(value) then
         if name == fn.fnamemodify(api.nvim_buf_get_name(value), ":t") and value ~= bufnr then
+          ---@type table<integer,string>
           local other = {}
           for match in (api.nvim_buf_get_name(value) .. "/"):gmatch("(.-)" .. "/") do
             table.insert(other, match)
           end
-
+          ---@type table<integer,string>
           local current = {}
           for match in (api.nvim_buf_get_name(bufnr) .. "/"):gmatch("(.-)" .. "/") do
             table.insert(current, match)
           end
-
           name = current[#current]
 
           for i = #current - 1, 1, -1 do
@@ -194,12 +196,13 @@ M.buttons = function()
 end
 
 M.run = function()
+  ---@type table
   local modules = require "nvchad_ui.tabufline.modules"
-  local opts = require("core.utils").load_config().ui.tabufline
+  local options = require("nvchad_ui.config").tabufline
 
   -- merge user modules :D
-  if opts.overriden_modules then
-    modules = vim.tbl_deep_extend("force", modules, opts.overriden_modules())
+  if options.overriden_modules then
+    modules = vim.tbl_deep_extend("force", modules, options.overriden_modules())
   end
 
   local result = modules.bufferlist() .. (modules.tablist() or "") .. modules.buttons()

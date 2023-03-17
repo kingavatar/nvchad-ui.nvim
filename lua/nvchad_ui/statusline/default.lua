@@ -1,6 +1,6 @@
 local fn = vim.fn
-local config = require("core.utils").load_config().ui.statusline
-local sep_style = config.separator_style
+local options = require("nvchad_ui.config").statusline
+local sep_style = options.separator_style
 
 local default_sep_icons = {
   default = { left = "", right = " " },
@@ -62,6 +62,7 @@ M.fileInfo = function()
     local devicons_present, devicons = pcall(require, "nvim-web-devicons")
 
     if devicons_present then
+      ---@type string?
       local ft_icon = devicons.get_icon(filename)
       icon = (ft_icon ~= nil and " " .. ft_icon) or ""
     end
@@ -163,10 +164,11 @@ M.cursor_position = function()
 end
 
 M.run = function()
+  ---@type table
   local modules = require "nvchad_ui.statusline.default"
 
-  if config.overriden_modules then
-    modules = vim.tbl_deep_extend("force", modules, config.overriden_modules())
+  if options.overriden_modules then
+    modules = vim.tbl_deep_extend("force", modules, options.overriden_modules())
   end
 
   return table.concat {

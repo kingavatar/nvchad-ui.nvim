@@ -1,5 +1,5 @@
 local fn = vim.fn
-local config = require("core.utils").load_config().ui.statusline
+local options = require("nvchad_ui.config").statusline
 
 local M = {}
 
@@ -46,6 +46,7 @@ M.fileInfo = function()
     local devicons_present, devicons = pcall(require, "nvim-web-devicons")
 
     if devicons_present then
+      ---@type string
       local ft_icon = devicons.get_icon(filename)
       icon = (ft_icon ~= nil and " " .. ft_icon) or ""
     end
@@ -110,9 +111,13 @@ M.LSP_Diagnostics = function()
     return "  0  0"
   end
 
+  ---@type integer | string
   local errors = #vim.diagnostic.get(0, { severity = vim.diagnostic.severity.ERROR })
+  ---@type integer | string
   local warnings = #vim.diagnostic.get(0, { severity = vim.diagnostic.severity.WARN })
+  ---@type integer | string
   local hints = #vim.diagnostic.get(0, { severity = vim.diagnostic.severity.HINT })
+  ---@type integer | string
   local info = #vim.diagnostic.get(0, { severity = vim.diagnostic.severity.INFO })
 
   errors = (errors and errors > 0) and (" " .. errors .. " ") or " 0 "
@@ -143,10 +148,11 @@ M.cwd = function()
 end
 
 M.run = function()
+  ---@type table
   local modules = require "nvchad_ui.statusline.vscode"
 
-  if config.overriden_modules then
-    modules = vim.tbl_deep_extend("force", modules, config.overriden_modules())
+  if options.overriden_modules then
+    modules = vim.tbl_deep_extend("force", modules, options.overriden_modules())
   end
 
   return table.concat {
