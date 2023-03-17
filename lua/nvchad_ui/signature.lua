@@ -1,4 +1,4 @@
-local config = require("core.utils").load_config().ui.lsp.signature 
+local options = require("nvchad_ui.config").options.lsp.signature
 
 -- thx to https://gitlab.com/ranjithshegde/dotbare/-/blob/master/.config/nvim/lua/lsp/init.lua
 local M = {}
@@ -76,14 +76,14 @@ local open_signature = function()
       vim.lsp.with(M.signature_window, {
         border = "single",
         focusable = false,
-        silent = config.silent,
+        silent = options.silent,
       })
     )
   end
 end
 
 M.setup = function(client)
-  if config.disabled then
+  if not options.enabled then
     return
   end
   table.insert(clients, client)

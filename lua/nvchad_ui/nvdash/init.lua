@@ -2,11 +2,11 @@ local M = {}
 local api = vim.api
 local fn = vim.fn
 
-dofile(vim.g.base46_cache .. "nvdash")
+-- dofile(vim.g.base46_cache .. "nvdash")
 
-local config = require("core.utils").load_config().ui.nvdash
+local options = require("nvchad_ui.config").options.nvdash
 
-local headerAscii = config.header
+local headerAscii = options.header
 local emmptyLine = string.rep(" ", vim.fn.strwidth(headerAscii[1]))
 
 table.insert(headerAscii, 1, emmptyLine)
@@ -25,7 +25,7 @@ api.nvim_create_autocmd("BufWinLeave", {
 
 local nvdashWidth = #headerAscii[1] + 3
 
-local max_height = #headerAscii + 4 + (2 * #config.buttons) -- 4  = extra spaces i.e top/bottom
+local max_height = #headerAscii + 4 + (2 * #options.buttons) -- 4  = extra spaces i.e top/bottom
 local get_win_height = api.nvim_win_get_height
 
 M.open = function(buf)
@@ -47,7 +47,7 @@ M.open = function(buf)
     vim.g.nvdash_displayed = true
 
     local header = headerAscii
-    local buttons = config.buttons
+    local buttons = options.buttons
 
     local function addSpacing_toBtns(txt1, txt2)
       local btn_len = fn.strwidth(txt1) + fn.strwidth(txt2)
@@ -105,7 +105,7 @@ M.open = function(buf)
     local first_btn_line = abc + #header + 2
     local keybind_lineNrs = {}
 
-    for _, _ in ipairs(config.buttons) do
+    for _, _ in ipairs(options.buttons) do
       table.insert(keybind_lineNrs, first_btn_line - 2)
       first_btn_line = first_btn_line + 2
     end
@@ -133,7 +133,7 @@ M.open = function(buf)
     vim.keymap.set("n", "<CR>", function()
       for i, val in ipairs(keybind_lineNrs) do
         if val == fn.line "." then
-          local action = config.buttons[i][3]
+          local action = options.buttons[i][3]
 
           if type(action) == "string" then
             vim.cmd(action)
