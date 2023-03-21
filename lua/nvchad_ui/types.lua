@@ -3,9 +3,9 @@
 --- NvChad statusline options
 --- Hover on individual properties for more details
 ---@class NvChadStatusline
---- Set style for statusline
+--- Set theme for statusline
 --- Some seperators are present only default and minimal style
----@field style "default"| "minimal" | "vscode" | "vscode_colored"
+---@field theme "default"| "minimal" | "vscode" | "vscode_colored"
 --- Seperators :
 ---  - default : "" "" Will only work for default Statusline Theme
 ---  - "round" : "" "" Will only work for default and minimal Statusline Theme
