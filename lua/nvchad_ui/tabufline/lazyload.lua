@@ -1,4 +1,4 @@
-local options = require("nvchad_ui.config").tabufline
+local options = require("nvchad_ui.config").options.tabufline
 
 -- store listed buffers in tab local var
 vim.t.bufs = vim.api.nvim_list_bufs()
@@ -60,7 +60,6 @@ vim.api.nvim_create_autocmd("BufDelete", {
 
 -- TODO: Configure this mapping or give it as options
 -- require("core.utils").load_mappings "tabufline"
-
 if options.lazyload then
   vim.api.nvim_create_autocmd({ "BufNewFile", "BufRead", "TabEnter", "TermOpen" }, {
     pattern = "*",

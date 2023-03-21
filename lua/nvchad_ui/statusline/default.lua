@@ -1,5 +1,5 @@
 local fn = vim.fn
-local options = require("nvchad_ui.config").statusline
+local options = require("nvchad_ui.config").options.statusline
 local sep_style = options.separator_style
 
 local default_sep_icons = {

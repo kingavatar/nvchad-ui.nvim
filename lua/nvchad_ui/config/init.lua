@@ -13,7 +13,7 @@ local M = {}
 ---@field lsp NvChadLsp
 M.defaults = {
   statusline = {
-    style = "default",
+    theme = "default",
     separator_style = "default",
     overriden_modules = nil,
   },
@@ -38,16 +38,16 @@ M.defaults = {
 M.options = {}
 
 --- function to Setup NvChad UI Elements
----@param opts ?NvChadUIConfig Use the default Config or user given config
+---@param opts? NvChadUIConfig Use the default Config or user given config
 function M.setup(opts)
   M.options = vim.tbl_deep_extend("force", M.defaults, opts or {})
-
   local new_cmd = vim.api.nvim_create_user_command
 
-  vim.opt.statusline = "%!v:lua.require('nvchad_ui.statusline." .. M.options.statusline .. "').run()"
 
+  vim.opt.statusline = "%!v:lua.require('nvchad_ui.statusline." .. M.options.statusline.theme .. "').run()"
+  vim.opt.laststatus = 3
   if M.options.tabufline.enabled then
-    require "nvchad_ui.tabufline.lazyload"
+    -- require "nvchad_ui.tabufline.lazyload"
   end
 
   -- Command to toggle NvDash

@@ -198,7 +198,7 @@ end
 M.run = function()
   ---@type table
   local modules = require "nvchad_ui.tabufline.modules"
-  local options = require("nvchad_ui.config").tabufline
+  local options = require("nvchad_ui.config").options.tabufline
 
   -- merge user modules :D
   if options.overriden_modules then

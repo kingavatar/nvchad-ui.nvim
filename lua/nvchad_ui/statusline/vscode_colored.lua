@@ -1,5 +1,5 @@
 local fn = vim.fn
-local options = require("nvchad_ui.config").statusline
+local options = require("nvchad_ui.config").options.statusline
 
 local M = {}
 
