@@ -1,5 +1,5 @@
 local fn = vim.fn
-local options = require("nvchad_ui.config").statusline
+local options = require("nvchad_ui.config").options.statusline
 local sep_style = options.separator_style
 
 sep_style = (sep_style ~= "round" and sep_style ~= "block") and "block" or sep_style
