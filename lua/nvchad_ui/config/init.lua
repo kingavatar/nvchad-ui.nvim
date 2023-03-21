@@ -42,7 +42,8 @@ M.options = {}
 function M.setup(opts)
   M.options = vim.tbl_deep_extend("force", M.defaults, opts or {})
   local new_cmd = vim.api.nvim_create_user_command
-
+  local colors = require "nvchad_ui.colors"
+  colors.load_all_highlights()
 
   vim.opt.statusline = "%!v:lua.require('nvchad_ui.statusline." .. M.options.statusline.theme .. "').run()"
   vim.opt.laststatus = 3
