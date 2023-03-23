@@ -2,6 +2,7 @@ local fn = vim.fn
 local options = require("nvchad_ui.config").options.statusline
 local sep_style = options.separator_style
 local use_lualine = options.lualine
+local use_lazyvim = require("nvchad_ui.config").options.lazyVim
 
 local default_sep_icons = {
   default = { left = "", right = " " },
@@ -48,19 +49,15 @@ M.modes = {
 }
 
 ---@param mode string
-M.mode = function(mode)
+M.mode = function(mode, lualine_hl)
   local current_mode = "%#" .. M.modes[mode][2] .. "#" .. "  " .. M.modes[mode][1]
   local mode_sep1 = "%#" .. M.modes[mode][2] .. "Sep" .. "#" .. sep_r
 
-  if use_lualine then
-    return current_mode .. mode_sep1 .. "%#ST_EmptySpace" .. M.modes[mode][3] .. "#" .. sep_r
-  end
-
-  return current_mode .. mode_sep1 .. "%#ST_EmptySpace#" .. sep_r
+  return current_mode .. mode_sep1 .. "%#ST_EmptySpace" .. lualine_hl .. "#" .. sep_r
 end
 
----@param mode string
-M.fileInfo = function(mode)
+---@param lualine_hl string
+M.fileInfo = function(lualine_hl)
   local icon = "  "
   local filename = (fn.expand "%" == "" and "Empty ") or fn.expand "%:t"
 
@@ -77,23 +74,11 @@ M.fileInfo = function(mode)
     filename = " " .. filename .. " "
   end
 
-  if use_lualine then
-    return "%#St_file_info"
-      .. M.modes[mode][3]
-      .. "#"
-      .. icon
-      .. filename
-      .. "%#St_file_sep"
-      .. M.modes[mode][3]
-      .. "#"
-      .. sep_r
-  end
-
-  return "%#St_file_info#" .. icon .. filename .. "%#St_file_sep#" .. sep_r
+  return "%#St_file_info" .. lualine_hl .. "#" .. icon .. filename .. "%#St_file_sep" .. lualine_hl .. "#" .. sep_r
 end
 
----@param mode string
-M.git = function(mode)
+---@param lualine_hl string
+M.git = function(lualine_hl)
   ---@diagnostic disable-next-line: undefined-field
   if not vim.b.gitsigns_head or vim.b.gitsigns_git_status then
     return ""
@@ -108,10 +93,7 @@ M.git = function(mode)
   local removed = (git_status.removed and git_status.removed ~= 0) and ("  " .. git_status.removed) or ""
   local branch_name = "  " .. git_status.head
 
-  if use_lualine then
-    return "%#St_gitIcons" .. M.modes[mode][3] .. "#" .. branch_name .. added .. changed .. removed
-  end
-  return "%#St_gitIcons#" .. branch_name .. added .. changed .. removed
+  return "%#St_gitIcons" .. lualine_hl .. "#" .. branch_name .. added .. changed .. removed
 end
 
 -- LSP STUFF
@@ -164,42 +146,66 @@ M.LSP_Diagnostics = function()
   return errors .. warnings .. hints .. info
 end
 
----@param mode string
-M.LSP_status = function(mode)
+--
+-- {
+--   function() return require("noice").api.status.command.get() end,
+--   cond = function() return package.loaded["noice"] and require("noice").api.status.command.has() end,
+--   color = fg("Statement")
+-- },
+-- -- stylua: ignore
+-- {
+--   function() return require("noice").api.status.mode.get() end,
+--   cond = function() return package.loaded["noice"] and require("noice").api.status.mode.has() end,
+--   color = fg("Constant") ,
+-- },
+-- { require("lazy.status").updates, cond = require("lazy.status").has_updates, color = fg("Special") },
+--
+M.noice_command = function()
+  if package.loaded["noice"] and require("noice").api.status.command.has() then
+    return "%#St_lspInfo#" .. require("noice").api.status.command.get() .. " "
+  end
+  return ""
+end
+
+M.noice_mode = function()
+  if package.loaded["noice"] and require("noice").api.status.mode.has() then
+    return "%#St_lspInfo#" .. require("noice").api.status.mode.get() .. " "
+  end
+  return ""
+end
+
+---@param lualine_hl string
+M.lazy_updates = function(lualine_hl)
+  if require("lazy.status").has_updates() then
+    return "%#St_LspStatus" .. lualine_hl .. "#" .. require("lazy.status").updates()
+  end
+  return ""
+end
+
+---@param lualine_hl string
+M.LSP_status = function(lualine_hl)
   if rawget(vim, "lsp") then
     ---@diagnostic disable-next-line: no-unknown
     for _, client in ipairs(vim.lsp.get_active_clients()) do
       if client.attached_buffers[vim.api.nvim_get_current_buf()] then
-        if use_lualine then
-          return (
-            vim.o.columns > 100
-            and "%#St_LspStatus" .. M.modes[mode][3] .. "#" .. "   LSP ~ " .. client.name .. " "
-          ) or "   LSP "
-        end
-        return (vim.o.columns > 100 and "%#St_LspStatus#" .. "   LSP ~ " .. client.name .. " ") or "   LSP "
+        return (vim.o.columns > 100 and "%#St_LspStatus" .. lualine_hl .. "#" .. "   LSP ~ " .. client.name .. " ")
+          or "   LSP "
       end
     end
   end
 end
 
----@param mode string
-M.cwd = function(mode)
-  local dir_icon = "%#St_cwd_icon#" .. " "
-  local dir_name = "%#St_cwd_text#" .. " " .. fn.fnamemodify(fn.getcwd(), ":t") .. " "
+---@param lualine_hl string
+M.cwd = function(lualine_hl)
+  local dir_icon = "%#St_cwd_icon" .. lualine_hl .. "#" .. " "
+  local dir_name = "%#St_cwd_text" .. lualine_hl .. "#" .. " " .. fn.fnamemodify(fn.getcwd(), ":t") .. " "
 
-  if use_lualine then
-    dir_icon = "%#St_cwd_icon" .. M.modes[mode][3] .. "#" .. " "
-    dir_name = "%#St_cwd_text" .. M.modes[mode][3] .. "#" .. " " .. fn.fnamemodify(fn.getcwd(), ":t") .. " "
-
-    return (vim.o.columns > 85 and ("%#St_cwd_sep" .. M.modes[mode][3] .. "#" .. sep_l .. dir_icon .. dir_name)) or ""
-  end
-
-  return (vim.o.columns > 85 and ("%#St_cwd_sep#" .. sep_l .. dir_icon .. dir_name)) or ""
+  return (vim.o.columns > 85 and ("%#St_cwd_sep" .. lualine_hl .. "#" .. sep_l .. dir_icon .. dir_name)) or ""
 end
 
----@param mode string
-M.cursor_position = function(mode)
-  local left_sep = "%#St_pos_sep#" .. sep_l .. "%#St_pos_icon#" .. " "
+---@param lualine_hl string
+M.cursor_position = function(lualine_hl)
+  local left_sep = "%#St_pos_sep" .. lualine_hl .. "#" .. sep_l .. "%#St_pos_icon" .. lualine_hl .. "#" .. " "
 
   local current_line = fn.line "."
   local total_line = fn.line "$"
@@ -209,20 +215,7 @@ M.cursor_position = function(mode)
   text = (current_line == 1 and "Top") or text
   text = (current_line == total_line and "Bot") or text
 
-  if use_lualine then
-    left_sep = "%#St_pos_sep"
-      .. M.modes[mode][3]
-      .. "#"
-      .. sep_l
-      .. "%#St_pos_icon"
-      .. M.modes[mode][3]
-      .. "#"
-      .. " "
-
-    return left_sep .. "%#St_pos_text" .. M.modes[mode][3] .. "#" .. " " .. text .. " "
-  end
-
-  return left_sep .. "%#St_pos_text#" .. " " .. text .. " "
+  return left_sep .. "%#St_pos_text" .. lualine_hl .. "#" .. " " .. text .. " "
 end
 
 M.run = function()
@@ -235,20 +228,25 @@ M.run = function()
 
   ---@type string
   local m = vim.api.nvim_get_mode().mode
+  local lualine_hl = use_lualine and M.modes[m][3] or ""
 
   return table.concat {
-    modules.mode(m),
-    modules.fileInfo(m),
-    modules.git(m),
+    modules.mode(m, lualine_hl),
+    modules.fileInfo(lualine_hl),
+    modules.git(lualine_hl),
+    use_lazyvim and "  " .. modules.LSP_Diagnostics() or "",
 
     "%=",
-    modules.LSP_progress(),
+    not use_lazyvim and modules.LSP_progress() or "",
     "%=",
 
-    modules.LSP_Diagnostics(),
-    modules.LSP_status(m) or "",
-    modules.cwd(m),
-    modules.cursor_position(m),
+    not use_lazyvim and modules.LSP_Diagnostics() or "",
+    use_lazyvim and modules.noice_command() or "",
+    use_lazyvim and modules.noice_mode() or "",
+    use_lazyvim and modules.lazy_updates(lualine_hl) or "",
+    modules.LSP_status(lualine_hl) or "",
+    modules.cwd(lualine_hl),
+    modules.cursor_position(lualine_hl),
   }
 end
 

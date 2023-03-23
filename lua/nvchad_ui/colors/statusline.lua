@@ -40,7 +40,7 @@ colors.bright_orange = utils.getOrangeColor(colors.bright_red, colors.bright_yel
 if use_lualine and next(lualineColors) ~= nil then
   colors.statusline_bg = lualineColors.normal.c.bg
   colors.light_bg = lualineColors.normal.b.bg
-  colors.light_grey = lualineColors.normal.b.bg
+  -- colors.light_grey = lualineColors.normal.b.bg
 end
 
 local lsp_highlights = {
