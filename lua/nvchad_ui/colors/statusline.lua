@@ -2,6 +2,10 @@ local M = {}
 
 local utils = require "nvchad_ui.colors.utils"
 
+local lualineColors = utils.get_lualine_colors()
+local use_lualine = require("nvchad_ui.config").options.statusline.lualine
+local next = next
+
 --- Defualt Colors fetched from colorscheme set terminal colors and highlights
 local colors = {
   -- black = vim.g.terminal_color_0,
@@ -29,6 +33,15 @@ local colors = {
   statusline_bg = utils.extract_highlight_colors("StatusLine", "bg"),
   -- normal_bg = utils.extract_highlight_colors("Normal", "bg")
 }
+
+colors.orange = utils.getOrangeColor(colors.red, colors.yellow)
+colors.bright_orange = utils.getOrangeColor(colors.bright_red, colors.bright_yellow)
+
+if use_lualine and next(lualineColors) ~= nil then
+  colors.statusline_bg = lualineColors.normal.c.bg
+  colors.light_bg = lualineColors.normal.b.bg
+  colors.light_grey = lualineColors.normal.b.bg
+end
 
 local lsp_highlights = {
   -- lsp highlights
@@ -262,7 +275,7 @@ M.vscode_colored = {
   },
 
   St_encode = {
-    fg = colors.bright_yellow,
+    fg = colors.bright_orange,
     bg = colors.statusline_bg,
   },
 
@@ -271,6 +284,165 @@ M.vscode_colored = {
     bg = colors.statusline_bg,
   },
 }
+
+local lualineMode = {
+  Normal = "normal",
+  Visual = "visual",
+  Insert = "insert",
+  Replace = "replace",
+  Command = "command",
+  Select = "visual",
+  Terminal = "command",
+  NTerminal = "command",
+  Confirm = "command",
+}
+
+local lualine_highlights = {
+  _normal = "normal",
+  _insert = "insert",
+  _replace = "replace",
+  _visual = "visual",
+  _command = "command",
+  _terminal = "inactive",
+}
+
+---Add lualine highlights to elements
+---@param lualine_config Add_Lualine_Config
+local add_lualine_highlights = function(lualine_config)
+  for hl, mod in pairs(lualine_highlights) do
+    ---@type string | table
+    local final_fg = ""
+    ---@type string | table
+    local final_bg = ""
+    if lualine_config.fg_section ~= nil then
+      ---@type string
+      final_fg = lualineColors[mod][lualine_config.fg_section][lualine_config.fg_mode]
+    elseif lualine_config.fg_col ~= nil then
+      final_fg = lualine_config.fg_col
+    end
+    if lualine_config.bg_section ~= nil then
+      ---@type string
+      final_bg = lualineColors[mod][lualine_config.bg_section][lualine_config.bg_mode]
+    elseif lualine_config.bg_col ~= nil then
+      final_bg = lualine_config.bg_col
+    end
+    ---@diagnostic disable-next-line: no-unknown
+    M[lualine_config.theme][lualine_config.mode .. hl] = { fg = final_fg, bg = final_bg }
+  end
+end
+
+-- Using lualine Colors
+M.use_lualine_highlights = function(style)
+  if style == "minimal" then
+    -- Minimal right seperator color
+    add_lualine_highlights {
+      theme = "minimal",
+      mode = "St_sep_r",
+      fg_section = "b",
+      fg_mode = "bg",
+      bg_col = colors.black,
+    }
+  elseif style == "default" then
+    -- Defualt B section
+    add_lualine_highlights {
+      theme = "default",
+      mode = "St_EmptySpace",
+      fg_col = utils.extract_highlight_colors("NonText", "fg"),
+      bg_section = "b",
+      bg_mode = "bg",
+    }
+
+    add_lualine_highlights {
+      theme = "default",
+      mode = "St_file_info",
+      fg_section = "b",
+      fg_mode = "fg",
+      bg_section = "b",
+      bg_mode = "bg",
+    }
+
+    add_lualine_highlights {
+      theme = "default",
+      mode = "St_file_sep",
+      fg_section = "b",
+      fg_mode = "bg",
+      bg_section = "c",
+      bg_mode = "bg",
+    }
+
+    --- Default C section
+
+    add_lualine_highlights {
+      theme = "default",
+      mode = "St_gitIcons",
+      fg_section = "c",
+      fg_mode = "fg",
+      bg_section = "c",
+      bg_mode = "bg",
+    }
+
+    --- Default X Y Z
+    add_lualine_highlights {
+      theme = "default",
+      mode = "St_LspStatus",
+      fg_section = "a",
+      fg_mode = "bg",
+      bg_section = "c",
+      bg_mode = "bg",
+    }
+
+    add_lualine_highlights {
+      theme = "default",
+      mode = "St_cwd_icon",
+      fg_section = "b",
+      fg_mode = "fg",
+      bg_section = "b",
+      bg_mode = "bg",
+      -- bg_col = colors.bright_red,
+    }
+    add_lualine_highlights {
+      theme = "default",
+      mode = "St_cwd_text",
+      fg_section = "b",
+      fg_mode = "fg",
+      bg_section = "b",
+      bg_mode = "bg",
+    }
+    add_lualine_highlights {
+      theme = "default",
+      mode = "St_cwd_sep",
+      fg_section = "b",
+      fg_mode = "bg",
+      -- fg_col = colors.bright_red,
+      bg_section = "c",
+      bg_mode = "bg",
+    }
+    add_lualine_highlights {
+      theme = "default",
+      mode = "St_pos_sep",
+      fg_section = "a",
+      fg_mode = "bg",
+      bg_section = "b",
+      bg_mode = "bg",
+    }
+    add_lualine_highlights {
+      theme = "default",
+      mode = "St_pos_icon",
+      fg_section = "c",
+      fg_mode = "bg",
+      bg_section = "a",
+      bg_mode = "bg",
+    }
+    add_lualine_highlights {
+      theme = "default",
+      mode = "St_pos_text",
+      fg_section = "a",
+      fg_mode = "bg",
+      bg_section = "b",
+      bg_mode = "bg",
+    }
+  end
+end
 
 -- From https://github.com/NvChad/base46/blob/v2.0/lua/base46/integrations/statusline.lua#L267
 local function genModes_hl(modename, col)
@@ -281,6 +453,21 @@ local function genModes_hl(modename, col)
   M.minimal["St_" .. modename .. "Mode"] = { fg = colors.black, bg = colors[col], bold = true }
   M.minimal["St_" .. modename .. "ModeSep"] = { fg = colors[col], bg = colors.black, bold = true }
   M.minimal["St_" .. modename .. "modeText"] = { fg = colors[col], bg = colors.one_bg, bold = true }
+  if next(lualineColors) ~= nil and use_lualine then
+    M.default["St_" .. modename .. "Mode"] =
+      { fg = lualineColors[lualineMode[modename]].a.fg, bg = lualineColors[lualineMode[modename]].a.bg, bold = true }
+    M.default["St_" .. modename .. "ModeSep"] =
+      { fg = lualineColors[lualineMode[modename]].a.bg, bg = utils.extract_highlight_colors("NonText", "fg") }
+    M.vscode_colored["St_" .. modename .. "Mode"] =
+      { fg = lualineColors[lualineMode[modename]].a.bg, bg = lualineColors[lualineMode[modename]].b.bg, bold = true }
+
+    M.minimal["St_" .. modename .. "Mode"] =
+      { fg = colors.black, bg = lualineColors[lualineMode[modename]].a.bg, bold = true }
+    M.minimal["St_" .. modename .. "ModeSep"] =
+      { fg = lualineColors[lualineMode[modename]].a.bg, bg = colors.black, bold = true }
+    M.minimal["St_" .. modename .. "modeText"] =
+      { fg = lualineColors[lualineMode[modename]].a.bg, bg = lualineColors[lualineMode[modename]].b.bg, bold = true }
+  end
 end
 
 -- add mode highlights
@@ -290,7 +477,7 @@ genModes_hl("Visual", "cyan")
 genModes_hl("Insert", "magenta")
 genModes_hl("Terminal", "green")
 genModes_hl("NTerminal", "green")
-genModes_hl("Replace", "bright_red")
+genModes_hl("Replace", "bright_orange")
 genModes_hl("Confirm", "bright_magenta")
 genModes_hl("Command", "green")
 genModes_hl("Select", "blue")
@@ -299,8 +486,11 @@ genModes_hl("Select", "blue")
 M.default = vim.tbl_extend("force", M.default, lsp_highlights)
 M.vscode_colored = vim.tbl_extend("force", M.vscode_colored, lsp_highlights)
 
--- add block highlights for minimal theme
-local function gen_hl(name, col)
+--- add block highlights for minimal theme
+---@param name string
+---@param col string
+---@param section? string
+local function gen_hl(name, col, section)
   M.minimal["St_" .. name .. "_bg"] = {
     fg = colors.black,
     bg = colors[col],
@@ -315,11 +505,44 @@ local function gen_hl(name, col)
     fg = colors[col],
     bg = colors.black,
   }
+  if next(lualineColors) ~= nil and use_lualine and section ~= nil then
+    add_lualine_highlights {
+      theme = "minimal",
+      mode = "St_" .. name .. "_bg",
+      fg_section = nil,
+      bg_section = section,
+      bg_mode = "bg",
+      fg_col = colors.black,
+      bg_col = nil,
+    }
+
+    add_lualine_highlights {
+      theme = "minimal",
+      mode = "St_" .. name .. "_txt",
+      fg_section = section,
+      fg_mode = "bg",
+      -- bg_section = nil,
+      bg_section = "b",
+      bg_mode = "bg",
+      fg_col = nil,
+      -- bg_col = colors.one_bg,
+    }
+
+    add_lualine_highlights {
+      theme = "minimal",
+      mode = "St_" .. name .. "_sep",
+      fg_section = section,
+      fg_mode = "bg",
+      bg_section = nil,
+      fg_col = nil,
+      bg_col = colors.black,
+    }
+  end
 end
 
 gen_hl("file", "red")
-gen_hl("Pos", "yellow")
-gen_hl("cwd", "bright_yellow")
-gen_hl("lsp", "green")
+gen_hl("Pos", "bright_yellow", "a")
+gen_hl("cwd", "bright_orange")
+gen_hl("lsp", "green", "a")
 
 return M

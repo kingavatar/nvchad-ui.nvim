@@ -13,6 +13,7 @@
 ---  - "arrow" : "" "" Will only work for default Statusline Theme
 ---@field separator_style "default" | "round" | "block"  | "arrow"
 ---@field overriden_modules ?table  override statusline modules
+---@field lualine boolean set it true if you want to use theme's lualine highlights works only for default and minimal
 
 --- NvChad tabufline options
 --- Hover on individual properties for more details
@@ -40,3 +41,13 @@
 ---@class NvChadLspSignature
 ---@field enabled boolean enable or disable nvchad lsp function signature. default option : false
 ---@field silent boolean silences 'no signature help available' message from appearing
+
+---@class Add_Lualine_Config
+---@field theme "default"| "minimal" | "vscode" | "vscode_colored"
+---@field mode string
+---@field fg_section? string
+---@field fg_mode? string
+---@field bg_section? string
+---@field bg_mode? string
+---@field fg_col? table | string
+---@field bg_col? table | string
