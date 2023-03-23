@@ -37,7 +37,7 @@ local is_valid_filename = require("nvchad_ui.util").is_valid_filename
 ---@param theme_name string
 ---@return table theme definition from module
 local function Load_theme(theme_name)
-  if is_valid_filename(theme_name) then
+  if not is_valid_filename(theme_name) then
     error "Invalid FileName for lualine theme"
   end
   local retval = {}
@@ -88,7 +88,6 @@ M.get_lualine_colors = function()
     if "base16" == color_name:sub(1, 6) then
       color_name = "base16"
     end
-
     -- Check if there's a theme for current colorscheme
     -- If there is load that instead of generating a new one
     local ok, theme = pcall(Load_theme, color_name)
