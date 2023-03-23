@@ -1,6 +1,8 @@
 ---@type NvChadUIConfig
 local M = {}
 
+local api = vim.api
+
 --- NvChad UI options
 --- Hover on individual properties for more details
 --- defaultly disabling nvdash and lsp function signatures
@@ -44,9 +46,16 @@ M.options = {}
 ---@param opts? NvChadUIConfig Use the default Config or user given config
 function M.setup(opts)
   M.options = vim.tbl_deep_extend("force", M.defaults, opts or {})
-  local new_cmd = vim.api.nvim_create_user_command
+  local new_cmd = api.nvim_create_user_command
+  api.nvim_create_augroup("nvchad_ui", {})
   local colors = require "nvchad_ui.colors"
   colors.load_all_highlights()
+
+  --- Auto refresh highlights on colorscheme change
+  api.nvim_create_autocmd("ColorScheme", {
+    group = "nvchad_ui",
+    callback = colors.load_all_highlights,
+  })
 
   vim.opt.statusline = "%!v:lua.require('nvchad_ui.statusline." .. M.options.statusline.theme .. "').run()"
   vim.opt.laststatus = 3
@@ -59,7 +68,7 @@ function M.setup(opts)
     if vim.g.nvdash_displayed then
       vim.cmd "bd"
     else
-      require("nvchad_ui.nvdash").open(vim.api.nvim_create_buf(false, true))
+      require("nvchad_ui.nvdash").open(api.nvim_create_buf(false, true))
     end
   end, {})
 
@@ -82,15 +91,15 @@ function M.setup(opts)
   end, {})
 
   -- redraw dashboard on VimResized event
-  vim.api.nvim_create_autocmd("VimResized", {
+  api.nvim_create_autocmd("VimResized", {
     callback = function()
       if vim.bo.filetype == "nvdash" then
         vim.opt_local.modifiable = true
-        vim.api.nvim_buf_set_lines(0, 0, -1, false, { "" })
+        api.nvim_buf_set_lines(0, 0, -1, false, { "" })
         require("nvchad_ui.nvdash").open()
       elseif vim.bo.filetype == "nvcheatsheet" then
         vim.opt_local.modifiable = true
-        vim.api.nvim_buf_set_lines(0, 0, -1, false, { "" })
+        api.nvim_buf_set_lines(0, 0, -1, false, { "" })
         require("nvchad_ui.cheatsheet." .. M.options.cheatsheet)()
       end
     end,

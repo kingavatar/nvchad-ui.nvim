@@ -1,11 +1,14 @@
 ---@meta
 
+---Type which provides statusline theme enum
+---@alias statusline_theme "default" | "minimal" | "vscode" | "vscode_colored"
+
 --- NvChad statusline options
 --- Hover on individual properties for more details
 ---@class NvChadStatusline
 --- Set theme for statusline
 --- Some seperators are present only default and minimal style
----@field theme "default"| "minimal" | "vscode" | "vscode_colored"
+---@field theme statusline_theme
 --- Seperators :
 ---  - default : "" "" Will only work for default Statusline Theme
 ---  - "round" : "" "" Will only work for default and minimal Statusline Theme
@@ -43,7 +46,7 @@
 ---@field silent boolean silences 'no signature help available' message from appearing
 
 ---@class Add_Lualine_Config
----@field theme "default"| "minimal" | "vscode" | "vscode_colored"
+---@field theme statusline_theme
 ---@field mode string
 ---@field fg_section? string
 ---@field fg_mode? string
