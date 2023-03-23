@@ -7,7 +7,7 @@ local use_lualine = require("nvchad_ui.config").options.statusline.lualine
 M.apply_highlights = function(theme)
   local lualineColors = utils.get_lualine_colors()
   local next = next
-  M.can_use_lualine = use_lualine and (next(lualineColors) ~= nil)
+  M.can_use_lualine = use_lualine and next(lualineColors) ~= nil
   --- Defualt Colors fetched from colorscheme set terminal colors and highlights
   local colors = {
     -- black = vim.g.terminal_color_0,
@@ -446,7 +446,7 @@ M.apply_highlights = function(theme)
     end
   end
 
-  -- From https://github.com/NvChad/base46/blob/v2.0/lua/base46/integrations/statusline.lua#L267
+  ---@source https://github.com/NvChad/base46/blob/v2.0/lua/base46/integrations/statusline.lua#L267
   local function genModes_hl(modename, col)
     M.default["St_" .. modename .. "Mode"] = { fg = colors.black, bg = colors[col], bold = true }
     M.default["St_" .. modename .. "ModeSep"] =
@@ -548,7 +548,7 @@ M.apply_highlights = function(theme)
   gen_hl("cwd", "bright_orange")
   gen_hl("lsp", "green", "a")
 
-  if use_lualine and next(lualineColors) ~= nil then
+  if M.can_use_lualine then
     use_lualine_highlights(theme)
   end
 end

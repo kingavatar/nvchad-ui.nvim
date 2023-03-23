@@ -1,8 +1,8 @@
 local M = {}
 
--- From https://github.com/nvim-lualine/lualine.nvim/blob/master/lua/lualine/utils/utils.lua#L11
--- Note for now only works for termguicolors scope can be bg or fg or any other
--- attr parameter like bold/italic/reverse
+---@source https://github.com/nvim-lualine/lualine.nvim/blob/master/lua/lualine/utils/utils.lua#L11
+---Note for now only works for termguicolors scope can be bg or fg or any other
+---attr parameter like bold/italic/reverse
 ---@param color_group string hl_group name
 ---@param scope       string bg | fg | sp
 ---@return table|string returns #rrggbb formatted color when scope is specified
@@ -31,7 +31,7 @@ M.sep = package.config:sub(1, 1)
 
 local is_valid_filename = require("nvchad_ui.util").is_valid_filename
 
---- From https://github.com/nvim-lualine/lualine.nvim/blob/master/lua/lualine/utils/loader.lua#L212
+---@source https://github.com/nvim-lualine/lualine.nvim/blob/master/lua/lualine/utils/loader.lua#L212
 ---loads a theme from lua module
 ---prioritizes external themes (from user config or other plugins) over the bundled ones
 ---@param theme_name string
@@ -159,6 +159,49 @@ M.getOrangeColor = function(red, yellow)
   local orange = mixColors(red, yellow)
   -- Return the orange color
   return orange
+end
+
+---@source https://github.com/akinsho/bufferline.nvim/blob/main/lua/bufferline/colors.lua#L16
+local function alter(attr, percent)
+  return math.floor(attr * (100 + percent) / 100)
+end
+
+---@source https://github.com/akinsho/bufferline.nvim/blob/main/lua/bufferline/colors.lua#L18
+---Darken a specified hex color
+---@param color string?
+---@param percent number
+---@return string
+M.shade_color = function(color, percent)
+  if not color then
+    return "NONE"
+  end
+  local r, g, b = hex2rgb(color)
+  if not r or not g or not b then
+    return "NONE"
+  end
+  r, g, b = alter(r, percent), alter(g, percent), alter(b, percent)
+  r, g, b = math.min(r, 255), math.min(g, 255), math.min(b, 255)
+  return string.format("#%02x%02x%02x", r, g, b)
+end
+
+---@source https://github.com/akinsho/bufferline.nvim/blob/main/lua/bufferline/colors.lua#L33
+--- Determine whether to use black or white text
+--- References:
+--- 1. https://stackoverflow.com/a/1855903/837964
+--- 2. https://stackoverflow.com/a/596243
+---@param hex string
+M.color_is_bright = function(hex)
+  if not hex then
+    return false
+  end
+  local r, g, b = hex2rgb(hex)
+  -- If any of the colors are missing return false
+  if not r or not g or not b then
+    return false
+  end
+  -- Counting the perceptive luminance - human eye favors green color
+  local luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255
+  return luminance > 0.5 -- if > 0.5 Bright colors, black font, otherwise Dark colors, white font
 end
 
 return M
