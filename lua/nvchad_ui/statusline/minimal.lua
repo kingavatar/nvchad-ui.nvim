@@ -1,6 +1,7 @@
 local fn = vim.fn
 local options = require("nvchad_ui.config").options.statusline
 local sep_style = options.separator_style
+local use_lualine = options.lualine
 
 sep_style = (sep_style ~= "round" and sep_style ~= "block") and "block" or sep_style
 
@@ -12,61 +13,72 @@ local default_sep_icons = {
 local separators = (type(sep_style) == "table" and sep_style) or default_sep_icons[sep_style]
 
 local sep_l = separators["left"]
-local sep_r = "%#St_sep_r#" .. separators["right"] .. " %#ST_EmptySpace#"
-
-local function gen_block(icon, txt, sep_l_hlgroup, iconHl_group, txt_hl_group)
-  return sep_l_hlgroup .. sep_l .. iconHl_group .. icon .. " " .. txt_hl_group .. " " .. txt .. sep_r
-end
+-- local sep_r = "%#St_sep_r#" .. separators["right"] .. " %#ST_EmptySpace#"
 
 local M = {}
 
+---@param mode string
+local sepR = function(mode)
+  if use_lualine then
+    return "%#St_sep_r" .. M.modes[mode][3] .. "#" .. separators["right"] .. " %#ST_EmptySpace#"
+  else
+    return "%#St_sep_r#" .. separators["right"] .. " %#ST_EmptySpace#"
+  end
+end
+
+local function gen_block(icon, txt, sep_l_hlgroup, iconHl_group, txt_hl_group, mode)
+  return sep_l_hlgroup .. sep_l .. iconHl_group .. icon .. " " .. txt_hl_group .. " " .. txt .. sepR(mode)
+end
+
 M.modes = {
-  ["n"] = { "NORMAL", "St_NormalMode" },
-  ["niI"] = { "NORMAL i", "St_NormalMode" },
-  ["niR"] = { "NORMAL r", "St_NormalMode" },
-  ["niV"] = { "NORMAL v", "St_NormalMode" },
-  ["no"] = { "N-PENDING", "St_NormalMode" },
-  ["i"] = { "INSERT", "St_InsertMode" },
-  ["ic"] = { "INSERT (completion)", "St_InsertMode" },
-  ["ix"] = { "INSERT completion", "St_InsertMode" },
-  ["t"] = { "TERMINAL", "St_TerminalMode" },
-  ["nt"] = { "NTERMINAL", "St_NTerminalMode" },
-  ["v"] = { "VISUAL", "St_VisualMode" },
-  ["V"] = { "V-LINE", "St_VisualMode" },
-  ["Vs"] = { "V-LINE (Ctrl O)", "St_VisualMode" },
-  [""] = { "V-BLOCK", "St_VisualMode" },
-  ["R"] = { "REPLACE", "St_ReplaceMode" },
-  ["Rv"] = { "V-REPLACE", "St_ReplaceMode" },
-  ["s"] = { "SELECT", "St_SelectMode" },
-  ["S"] = { "S-LINE", "St_SelectMode" },
-  [""] = { "S-BLOCK", "St_SelectMode" },
-  ["c"] = { "COMMAND", "St_CommandMode" },
-  ["cv"] = { "COMMAND", "St_CommandMode" },
-  ["ce"] = { "COMMAND", "St_CommandMode" },
-  ["r"] = { "PROMPT", "St_ConfirmMode" },
-  ["rm"] = { "MORE", "St_ConfirmMode" },
-  ["r?"] = { "CONFIRM", "St_ConfirmMode" },
-  ["x"] = { "CONFIRM", "St_ConfirmMode" },
-  ["!"] = { "SHELL", "St_TerminalMode" },
+  ["n"] = { "NORMAL", "St_NormalMode", "_normal" },
+  ["niI"] = { "NORMAL i", "St_NormalMode", "_normal" },
+  ["niR"] = { "NORMAL r", "St_NormalMode", "_normal" },
+  ["niV"] = { "NORMAL v", "St_NormalMode", "_normal" },
+  ["no"] = { "N-PENDING", "St_NormalMode", "_normal" },
+  ["i"] = { "INSERT", "St_InsertMode", "_insert" },
+  ["ic"] = { "INSERT (completion)", "St_InsertMode", "_insert" },
+  ["ix"] = { "INSERT completion", "St_InsertMode", "_insert" },
+  ["t"] = { "TERMINAL", "St_TerminalMode", "_terminal" },
+  ["nt"] = { "NTERMINAL", "St_NTerminalMode", "_terminal" },
+  ["v"] = { "VISUAL", "St_VisualMode", "_visual" },
+  ["V"] = { "V-LINE", "St_VisualMode", "_visual" },
+  ["Vs"] = { "V-LINE (Ctrl O)", "St_VisualMode", "_visual" },
+  [""] = { "V-BLOCK", "St_VisualMode", "_visual" },
+  ["R"] = { "REPLACE", "St_ReplaceMode", "_replace" },
+  ["Rv"] = { "V-REPLACE", "St_ReplaceMode", "_replace" },
+  ["s"] = { "SELECT", "St_SelectMode", "_replace" },
+  ["S"] = { "S-LINE", "St_SelectMode", "_replace" },
+  [""] = { "S-BLOCK", "St_SelectMode", "_replace" },
+  ["c"] = { "COMMAND", "St_CommandMode", "_command" },
+  ["cv"] = { "COMMAND", "St_CommandMode", "_command" },
+  ["ce"] = { "COMMAND", "St_CommandMode", "_command" },
+  ["r"] = { "PROMPT", "St_ConfirmMode", "_command" },
+  ["rm"] = { "MORE", "St_ConfirmMode", "_command" },
+  ["r?"] = { "CONFIRM", "St_ConfirmMode", "_command" },
+  ["x"] = { "CONFIRM", "St_ConfirmMode", "_command" },
+  ["!"] = { "SHELL", "St_TerminalMode", "_terminal" },
 }
 
-M.mode = function()
-  local m = vim.api.nvim_get_mode().mode
-
+---@param mode string
+M.mode = function(mode)
   return gen_block(
     "",
-    M.modes[m][1],
-    "%#" .. M.modes[m][2] .. "Sep#",
-    "%#" .. M.modes[m][2] .. "#",
-    "%#" .. M.modes[m][2] .. "Text#"
+    M.modes[mode][1],
+    "%#" .. M.modes[mode][2] .. "Sep#",
+    "%#" .. M.modes[mode][2] .. "#",
+    "%#" .. M.modes[mode][2] .. "Text#",
+    mode
   )
 end
 
-M.fileInfo = function()
+---@param mode string
+M.fileInfo = function(mode)
   local icon = ""
   local filename = (fn.expand "%" == "" and "Empty") or fn.expand "%:t"
 
   if filename ~= "Empty" then
+    ---@type boolean ,{get_icon: fun(string) : string}
     local devicons_present, devicons = pcall(require, "nvim-web-devicons")
 
     if devicons_present then
@@ -76,14 +88,17 @@ M.fileInfo = function()
     end
   end
 
-  return gen_block(icon, filename, "%#St_file_sep#", "%#St_file_bg#", "%#St_file_txt#")
+  return gen_block(icon, filename, "%#St_file_sep#", "%#St_file_bg#", "%#St_file_txt#", mode)
 end
 
 M.git = function()
+  ---@diagnostic disable-next-line: undefined-field
   if not vim.b.gitsigns_head or vim.b.gitsigns_git_status then
     return ""
   end
 
+  ---@type { added: integer , changed: integer , head: integer , removed: integer  }
+  ---@diagnostic disable-next-line: undefined-field
   local git_status = vim.b.gitsigns_status_dict
 
   local added = (git_status.added and git_status.added ~= 0) and ("  " .. git_status.added) or ""
@@ -100,7 +115,7 @@ M.LSP_progress = function()
     return ""
   end
 
-  ---@type table
+  ---@type { message: string, percentage: integer, title: string }
   local Lsp = vim.lsp.util.get_progress_messages()[1]
 
   if vim.o.columns < 120 or not Lsp then
@@ -144,23 +159,57 @@ M.LSP_Diagnostics = function()
   return errors .. warnings .. hints .. info
 end
 
-M.LSP_status = function()
+---@param mode string
+M.LSP_status = function(mode)
   if rawget(vim, "lsp") then
+    ---@diagnostic disable-next-line: no-unknown
     for _, client in ipairs(vim.lsp.get_active_clients()) do
       if client.attached_buffers[vim.api.nvim_get_current_buf()] then
-        return (vim.o.columns > 100 and gen_block("", client.name, "%#St_lsp_sep#", "%#St_lsp_bg#", "%#St_lsp_txt#"))
-          or "  LSP "
+        if use_lualine then
+          return (
+            vim.o.columns > 100
+            and gen_block(
+              "",
+              client.name,
+              "%#St_lsp_sep" .. M.modes[mode][3] .. "#",
+              "%#St_lsp_bg" .. M.modes[mode][3] .. "#",
+              "%#St_lsp_txt" .. M.modes[mode][3] .. "#",
+              mode
+            )
+          ) or "  LSP "
+        end
+        return (
+          vim.o.columns > 100 and gen_block("", client.name, "%#St_lsp_sep#", "%#St_lsp_bg#", "%#St_lsp_txt#", mode)
+        ) or "  LSP "
       end
     end
   end
 end
 
-M.cwd = function()
+---@param mode string
+M.cwd = function(mode)
   return (
     vim.o.columns > 85
-    and gen_block("", fn.fnamemodify(fn.getcwd(), ":t"), "%#St_cwd_sep#", "%#St_cwd_bg#", "%#St_cwd_txt#")
+    and gen_block("", fn.fnamemodify(fn.getcwd(), ":t"), "%#St_cwd_sep#", "%#St_cwd_bg#", "%#St_cwd_txt#", mode)
   ) or ""
 end
+
+---@param mode string
+M.pos = function(mode)
+  if use_lualine then
+    return gen_block(
+      "",
+      "%l/%c",
+      "%#St_Pos_sep" .. M.modes[mode][3] .. "#",
+      "%#St_Pos_bg" .. M.modes[mode][3] .. "#",
+      "%#St_Pos_txt" .. M.modes[mode][3] .. "#",
+      mode
+    )
+  end
+  return gen_block("", "%l/%c", "%#St_Pos_sep#", "%#St_Pos_bg#", "%#St_Pos_txt#", mode)
+end
+
+M.cursor_position = function() end
 
 M.run = function()
   ---@type table
@@ -170,9 +219,11 @@ M.run = function()
     modules = vim.tbl_deep_extend("force", modules, options.overriden_modules())
   end
 
+  local m = vim.api.nvim_get_mode().mode
+
   return table.concat {
-    modules.mode(),
-    modules.fileInfo(),
+    modules.mode(m),
+    modules.fileInfo(m),
     modules.git(),
 
     "%=",
@@ -181,9 +232,9 @@ M.run = function()
 
     string.upper(vim.bo.fileencoding) == "" and "" or string.upper(vim.bo.fileencoding) .. "  ",
     modules.LSP_Diagnostics(),
-    modules.LSP_status() or "",
-    modules.cwd(),
-    gen_block("", "%l/%c", "%#St_Pos_sep#", "%#St_Pos_bg#", "%#St_Pos_txt#"),
+    modules.LSP_status(m) or "",
+    modules.cwd(m),
+    modules.pos(m),
   }
 end
 
