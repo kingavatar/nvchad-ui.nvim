@@ -1,7 +1,7 @@
 local fn = vim.fn
 local options = require("nvchad_ui.config").options.statusline
 local sep_style = options.separator_style
-local use_lualine = options.lualine
+local use_lualine = require("nvchad_ui.colors.statusline").can_use_lualine
 local use_lazyvim = require("nvchad_ui.config").options.lazyVim
 
 local default_sep_icons = {
