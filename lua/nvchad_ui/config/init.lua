@@ -11,6 +11,7 @@ local M = {}
 ---NvCheatsheet has 2 themes ( grid & simple ) default option : grid
 ---@field cheatsheet "grid" | "simple"
 ---@field lsp NvChadLsp
+---@field lazyVim boolean set it true if using LazyVim
 M.defaults = {
   statusline = {
     theme = "default",
@@ -33,6 +34,7 @@ M.defaults = {
       silent = true,
     },
   },
+  lazyVim = false,
 }
 
 ---@type NvChadUIConfig
