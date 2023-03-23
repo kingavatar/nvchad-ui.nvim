@@ -14,6 +14,7 @@ local api = vim.api
 ---@field cheatsheet "grid" | "simple"
 ---@field lsp NvChadLsp
 ---@field lazyVim boolean set it true if using LazyVim
+---@field theme_toggle? {[1]: string , [2]: string} Mention themes for theme_toggle to toggle between
 M.defaults = {
   statusline = {
     theme = "default",
@@ -26,6 +27,7 @@ M.defaults = {
     lazyload = true,
     overriden_modules = nil,
   },
+  theme_toggle = nil,
   nvdash = {
     load_on_startup = false,
   },
@@ -60,7 +62,7 @@ function M.setup(opts)
   vim.opt.statusline = "%!v:lua.require('nvchad_ui.statusline." .. M.options.statusline.theme .. "').run()"
   vim.opt.laststatus = 3
   if M.options.tabufline.enabled then
-    -- require "nvchad_ui.tabufline.lazyload"
+    require "nvchad_ui.tabufline.lazyload"
   end
 
   -- Command to toggle NvDash

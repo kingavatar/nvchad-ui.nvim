@@ -1,7 +1,7 @@
 local fn = vim.fn
 local options = require("nvchad_ui.config").options.statusline
 local sep_style = options.separator_style
-local use_lualine = require("nvchad_ui.colors.statusline").can_use_lualine
+local use_lualine = require("nvchad_ui.colors").can_use_lualine
 local use_lazyvim = require("nvchad_ui.config").options.lazyVim
 
 sep_style = (sep_style ~= "round" and sep_style ~= "block") and "block" or sep_style
@@ -247,7 +247,7 @@ M.run = function()
   end
 
   local m = vim.api.nvim_get_mode().mode
-  local lualine_hl = use_lualine and M.modes[m][3] or ""
+  local lualine_hl = use_lualine() and M.modes[m][3] or ""
 
   return table.concat {
     modules.mode(m, lualine_hl),
