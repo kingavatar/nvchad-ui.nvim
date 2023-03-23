@@ -43,6 +43,7 @@ M.fileInfo = function()
   local filename = (fn.expand "%" == "" and "Empty ") or fn.expand "%:t"
 
   if filename ~= "Empty " then
+    ---@type boolean ,{get_icon: fun(string) : string}
     local devicons_present, devicons = pcall(require, "nvim-web-devicons")
 
     if devicons_present then
@@ -58,18 +59,23 @@ M.fileInfo = function()
 end
 
 M.git = function()
+  ---@diagnostic disable-next-line: undefined-field
   if not vim.b.gitsigns_head or vim.b.gitsigns_git_status then
     return ""
   end
 
+  ---@diagnostic disable-next-line: undefined-field
   return "  " .. vim.b.gitsigns_status_dict.head .. "  "
 end
 
 M.gitchanges = function()
+  ---@diagnostic disable-next-line: undefined-field
   if not vim.b.gitsigns_head or vim.b.gitsigns_git_status or vim.o.columns < 120 then
     return ""
   end
 
+  ---@type { added: integer , changed: integer , head: integer , removed: integer  }
+  ---@diagnostic disable-next-line: undefined-field
   local git_status = vim.b.gitsigns_status_dict
 
   local added = (git_status.added and git_status.added ~= 0) and ("  " .. git_status.added) or ""
@@ -85,6 +91,7 @@ M.LSP_progress = function()
     return ""
   end
 
+  ---@type { message: string, percentage: integer, title: string }
   local Lsp = vim.lsp.util.get_progress_messages()[1]
 
   if vim.o.columns < 120 or not Lsp then
@@ -134,6 +141,7 @@ end
 
 M.LSP_status = function()
   if rawget(vim, "lsp") then
+    ---@diagnostic disable-next-line: no-unknown
     for _, client in ipairs(vim.lsp.get_active_clients()) do
       if client.attached_buffers[vim.api.nvim_get_current_buf()] then
         return (vim.o.columns > 100 and "   " .. client.name .. "  ") or "   LSP  "

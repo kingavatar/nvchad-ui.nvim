@@ -16,6 +16,7 @@ M.defaults = {
     theme = "default",
     separator_style = "default",
     overriden_modules = nil,
+    lualine = false,
   },
   tabufline = {
     enabled = true,
