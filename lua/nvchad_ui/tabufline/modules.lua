@@ -8,6 +8,7 @@ local fn = vim.fn
 local isBufValid = function(bufnr)
   return vim.api.nvim_buf_is_valid(bufnr) and vim.bo[bufnr].buflisted
 end
+
 ---------------------------------------------------------- btn onclick functions ----------------------------------------------
 
 vim.cmd "function! TbGoToBuf(bufnr,b,c,d) \n execute 'b'..a:bufnr \n endfunction"
@@ -82,7 +83,6 @@ local function add_fileInfo(name, bufnr)
             table.insert(current, match)
           end
           name = current[#current]
-
           for i = #current - 1, 1, -1 do
             local value_current = current[i]
             local other_current = other[i]
