@@ -8,6 +8,7 @@ local fn = vim.fn
 local isBufValid = function(bufnr)
   return vim.api.nvim_buf_is_valid(bufnr) and vim.bo[bufnr].buflisted
 end
+
 ---------------------------------------------------------- btn onclick functions ----------------------------------------------
 
 vim.cmd "function! TbGoToBuf(bufnr,b,c,d) \n execute 'b'..a:bufnr \n endfunction"
@@ -73,22 +74,27 @@ local function add_fileInfo(name, bufnr)
         if name == fn.fnamemodify(api.nvim_buf_get_name(value), ":t") and value ~= bufnr then
           ---@type table<integer,string>
           local other = {}
-          for match in (api.nvim_buf_get_name(value) .. "/"):gmatch("(.-)" .. "/") do
+          for match in (vim.fs.normalize(api.nvim_buf_get_name(value)) .. "/"):gmatch("(.-)" .. "/") do
             table.insert(other, match)
           end
           ---@type table<integer,string>
           local current = {}
-          for match in (api.nvim_buf_get_name(bufnr) .. "/"):gmatch("(.-)" .. "/") do
+          for match in (vim.fs.normalize(api.nvim_buf_get_name(bufnr)) .. "/"):gmatch("(.-)" .. "/") do
             table.insert(current, match)
           end
           name = current[#current]
-
           for i = #current - 1, 1, -1 do
             local value_current = current[i]
             local other_current = other[i]
 
             if value_current ~= other_current then
-              name = value_current .. "/../" .. name
+              if (#current - i) < 2 then
+                ---@type string
+                name = value_current .. "/" .. name
+              else
+                ---@type string
+                name = value_current .. "/../" .. name
+              end
               break
             end
           end
