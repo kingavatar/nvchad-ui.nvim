@@ -18,10 +18,17 @@ end
 
 M.toggle_theme = function()
   local themes = options.theme_toggle
-  g.toggle_theme_icon = g.toggle_theme_icon == "   " and "   " or "   "
   if themes == nil or #themes < 2 then
+    g.toggle_theme_icon = g.toggle_theme_icon == "   " and "   " or "   "
     vim.notify("Set two themes in theme_toggle option in plugin setup", vim.log.levels.WARN)
     return
+  end
+  if g.toggle_theme_icon == "   " then
+    vim.cmd.colorscheme(themes[1])
+    g.toggle_theme_icon = "   "
+  else
+    vim.cmd.colorscheme(themes[2])
+    g.toggle_theme_icon = "   "
   end
 end
 
