@@ -156,7 +156,7 @@ end
 ---@return string
 M.getOrangeColor = function(red, yellow)
   -- Mix red and yellow colors using the mixColors function
-  local orange = mixColors(red, yellow)
+  local orange = mixColors(red or "#f7768e", yellow or "#e0af68")
   -- Return the orange color
   return orange
 end
