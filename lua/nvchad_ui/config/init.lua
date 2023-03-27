@@ -30,6 +30,21 @@ M.defaults = {
   theme_toggle = nil,
   nvdash = {
     load_on_startup = false,
+    -- header = {},
+    -- buttons = {},
+    header = {
+      "           ▄ ▄                   ",
+      "       ▄   ▄▄▄     ▄ ▄▄▄ ▄ ▄     ",
+      "       █ ▄ █▄█ ▄▄▄ █ █▄█ █ █     ",
+      "    ▄▄ █▄█▄▄▄█ █▄█▄█▄▄█▄▄█ █     ",
+      "  ▄ █▄▄█ ▄ ▄▄ ▄█ ▄▄▄▄▄▄▄▄▄▄▄▄▄▄  ",
+      "  █▄▄▄▄ ▄▄▄ █ ▄ ▄▄▄ ▄ ▄▄▄ ▄ ▄ █ ▄",
+      "▄ █ █▄█ █▄█ █ █ █▄█ █ █▄█ ▄▄▄ █ █",
+      "█▄█ ▄ █▄▄█▄▄█ █ ▄▄█ █ ▄ █ █▄█▄█ █",
+      "    █▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄█ █▄█▄▄▄█    ",
+    },
+
+    buttons = {},
   },
   cheatsheet = "grid",
   lsp = {
@@ -112,6 +127,15 @@ function M.setup(opts)
     if M.options.theme_toggle == nil then
       M.options.theme_toggle = { "tokyonight-day", "tokyonight" }
     end
+    vim.keymap.set("n", "<leader>ch", "<cmd> NvCheatsheet <CR>", { desc = "Mapping cheatsheet" })
+    M.options.nvdash.buttons = {
+      { "  Find File", "Spc f f", "Telescope find_files" },
+      { "  Recent Files", "Spc f r", "Telescope oldfiles" },
+      { "  Find Word", "Spc s g", "Telescope live_grep" },
+      { "  Bookmarks", "Spc s m", "Telescope marks" },
+      { "  Themes", "Spc u C", "Telescope themes" },
+      { "  Mappings", "Spc c h", "NvCheatsheet" },
+    }
   end
 end
 

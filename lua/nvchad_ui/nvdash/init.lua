@@ -37,10 +37,11 @@ M.open = function(buf)
 
     -- close windows i.e splits
     for _, winnr in ipairs(api.nvim_list_wins()) do
-      local bufnr = api.nvim_win_get_buf(winnr)
-
-      if api.nvim_buf_is_valid(bufnr) and (vim.bo[bufnr]).ft ~= "nvdash" then
-        api.nvim_win_close(winnr, true)
+      if api.nvim_win_is_valid(winnr) then
+        local bufnr = api.nvim_win_get_buf(winnr)
+        if api.nvim_buf_is_valid(bufnr) and (vim.bo[bufnr]).ft ~= "nvdash" then
+          api.nvim_win_close(winnr, true)
+        end
       end
     end
 
