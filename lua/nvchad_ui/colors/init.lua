@@ -24,10 +24,10 @@ M.toggle_theme = function()
     return
   end
   if g.toggle_theme_icon == "   " then
-    vim.cmd.colorscheme(themes[1])
+    vim.cmd.colorscheme(themes[2])
     g.toggle_theme_icon = "   "
   else
-    vim.cmd.colorscheme(themes[2])
+    vim.cmd.colorscheme(themes[1])
     g.toggle_theme_icon = "   "
   end
 end
