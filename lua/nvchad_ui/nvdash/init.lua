@@ -41,10 +41,11 @@ M.open = function(buf)
 
     -- close windows i.e splits
     for _, winnr in ipairs(api.nvim_list_wins()) do
-      local bufnr = api.nvim_win_get_buf(winnr)
-
-      if api.nvim_buf_is_valid(bufnr) and (vim.bo[bufnr]).ft ~= "nvdash" then
-        api.nvim_win_close(winnr, true)
+      if api.nvim_win_is_valid(winnr) then
+        local bufnr = api.nvim_win_get_buf(winnr)
+        if api.nvim_buf_is_valid(bufnr) and (vim.bo[bufnr]).ft ~= "nvdash" then
+          api.nvim_win_close(winnr, true)
+        end
       end
     end
 
@@ -115,17 +116,39 @@ M.open = function(buf)
     end
 
     vim.keymap.set("n", "h", "", { buffer = true })
+    vim.keymap.set("n", "<Left>", "", { buffer = true })
     vim.keymap.set("n", "l", "", { buffer = true })
+    vim.keymap.set("n", "<Right>", "", { buffer = true })
 
     vim.keymap.set("n", "k", function()
       local cur = fn.line "."
-      local target_line = vim.tbl_contains(keybind_lineNrs, cur) and cur - 2 or keybind_lineNrs[#keybind_lineNrs]
+      local target_line = vim.tbl_contains(keybind_lineNrs, cur) and keybind_lineNrs[1] ~= cur and cur - 2
+        or keybind_lineNrs[#keybind_lineNrs]
+      api.nvim_win_set_cursor(0, { target_line, math.floor(vim.o.columns / 2) - 13 })
+    end, { buffer = true })
+
+    vim.keymap.set("n", "<Up>", function()
+      local cur = fn.line "."
+      local target_line = vim.tbl_contains(keybind_lineNrs, cur) and keybind_lineNrs[1] ~= cur and cur - 2
+        or keybind_lineNrs[#keybind_lineNrs]
       api.nvim_win_set_cursor(0, { target_line, math.floor(vim.o.columns / 2) - 13 })
     end, { buffer = true })
 
     vim.keymap.set("n", "j", function()
       local cur = fn.line "."
-      local target_line = vim.tbl_contains(keybind_lineNrs, cur) and cur + 2 or keybind_lineNrs[1]
+      local target_line = vim.tbl_contains(keybind_lineNrs, cur)
+          and keybind_lineNrs[#keybind_lineNrs] ~= cur
+          and cur + 2
+        or keybind_lineNrs[1]
+      api.nvim_win_set_cursor(0, { target_line, math.floor(vim.o.columns / 2) - 13 })
+    end, { buffer = true })
+
+    vim.keymap.set("n", "<Down>", function()
+      local cur = fn.line "."
+      local target_line = vim.tbl_contains(keybind_lineNrs, cur)
+          and keybind_lineNrs[#keybind_lineNrs] ~= cur
+          and cur + 2
+        or keybind_lineNrs[1]
       api.nvim_win_set_cursor(0, { target_line, math.floor(vim.o.columns / 2) - 13 })
     end, { buffer = true })
 

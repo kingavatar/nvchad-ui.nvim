@@ -30,7 +30,7 @@
 ---@class NvDashConfig
 ---@field load_on_startup boolean enable or disable loading on startup
 ---@field header string[] dashboard header
----@field buttons NvChadButton[] dashboard buttons
+---@field buttons table<NvChadButton> dashboard buttons
 
 ---@alias NvChadButton string[3] NvChad dashboard button
 
