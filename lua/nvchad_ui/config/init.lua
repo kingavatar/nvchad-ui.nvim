@@ -107,9 +107,10 @@ function M.setup(opts)
     end,
   })
 
+  ---Set defaults for lazyVim
   if M.options.lazyVim then
     if M.options.theme_toggle == nil then
-      M.options.theme_toggle = { "tokyonight", "tokyonight-day" }
+      M.options.theme_toggle = { "tokyonight-day", "tokyonight" }
     end
   end
 end
