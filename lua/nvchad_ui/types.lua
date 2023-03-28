@@ -36,7 +36,7 @@
 
 ---@alias NvChadCheatsheet table<string, table<NvChadModes, table<string, table<string | table>>>>>
 
----@alias NvChadModes "n" | "v" | "t" | "i" | "x" | "o"
+---@alias NvChadModes string
 
 --- NvChad Lsp function signature options
 --- Hover on individual properties for more details
