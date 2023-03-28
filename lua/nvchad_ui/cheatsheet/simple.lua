@@ -1,4 +1,4 @@
-local mappings_tb = require("nvchad_ui.config").mappings -- default & user mappings
+local mappings_tb = require("nvchad_ui.config").options.mappings -- default & user mappings
 
 local api = vim.api
 local genStr = string.rep

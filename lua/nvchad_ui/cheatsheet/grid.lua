@@ -2,7 +2,7 @@
 
 local nvcheatsheet = vim.api.nvim_create_namespace "nvcheatsheet"
 -- TODO: create option for loading mappings withd default and extra user mappings
-local mappings_tb = require("nvchad_ui.config").mappings
+local mappings_tb = require("nvchad_ui.config").options.mappings
 
 vim.api.nvim_create_autocmd("BufWinLeave", {
   callback = function()
@@ -52,6 +52,7 @@ return function()
   local column_width = 0
 
   for _, modes in pairs(mappings_tb) do
+    ---@diagnostic disable-next-line: no-unknown
     modes.plugin = nil -- this is useless for the cheathseet
 
     for _, mappings in pairs(modes) do

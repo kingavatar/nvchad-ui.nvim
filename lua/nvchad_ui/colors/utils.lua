@@ -136,7 +136,7 @@ end
 ---@param color1 string
 ---@param color2 string
 ---@return string
-local function mixColors(color1, color2)
+function M.mixColors(color1, color2)
   -- Convert the colors from hex to RGB
   local r1, g1, b1 = hex2rgb(color1)
   local r2, g2, b2 = hex2rgb(color2)
@@ -156,7 +156,7 @@ end
 ---@return string
 M.getOrangeColor = function(red, yellow)
   -- Mix red and yellow colors using the mixColors function
-  local orange = mixColors(red or "#f7768e", yellow or "#e0af68")
+  local orange = M.mixColors(red or "#f7768e", yellow or "#e0af68")
   -- Return the orange color
   return orange
 end

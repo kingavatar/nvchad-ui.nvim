@@ -15,6 +15,7 @@ local api = vim.api
 ---@field lsp NvChadLsp
 ---@field lazyVim boolean set it true if using LazyVim
 ---@field theme_toggle? {[1]: string , [2]: string} Mention themes for theme_toggle to toggle between
+---@field mappings NvChadCheatsheet
 M.defaults = {
   statusline = {
     theme = "default",
@@ -54,6 +55,7 @@ M.defaults = {
     },
   },
   lazyVim = false,
+  mappings = {},
 }
 
 ---@type NvChadUIConfig
@@ -137,6 +139,7 @@ function M.setup(opts)
       { "  Mappings", "Spc c h", "NvCheatsheet" },
     }
   end
+  M.options.mappings = vim.tbl_deep_extend("force", require "nvchad_ui.cheatsheet.lazyvim", M.options.mappings)
 end
 
 return M
