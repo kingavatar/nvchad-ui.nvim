@@ -34,6 +34,10 @@
 
 ---@alias NvChadButton string[3] NvChad dashboard button
 
+---@alias NvChadCheatsheet table<string, table<NvChadModes, table<string, table<string | table>>>>>
+
+---@alias NvChadModes "n" | "v" | "t" | "i" | "x" | "o"
+
 --- NvChad Lsp function signature options
 --- Hover on individual properties for more details
 ---@class NvChadLsp
