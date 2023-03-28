@@ -68,7 +68,7 @@ return function()
   end
 
   -- 10 = space between mapping txt , 4 = 2 & 2 space around mapping txt
-  column_width = column_width + 10 + 4
+  column_width = column_width -- + 4 + 10 not having this space as some text desc I gave are huge for lazyvim
 
   local win_width = vim.api.nvim_win_get_width(0) - vim.fn.getwininfo(vim.api.nvim_get_current_win())[1].textoff - 4
   local columns_qty = math.floor(win_width / column_width)
