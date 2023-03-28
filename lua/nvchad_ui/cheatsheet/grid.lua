@@ -24,9 +24,22 @@ local ascii = {
   "                                      ",
 }
 
+local function close(buf)
+  vim.schedule(function()
+    if buf and vim.api.nvim_buf_is_valid(buf) then
+      vim.api.nvim_buf_delete(buf, { force = true })
+    end
+  end)
+end
+
 -- basically the draw function
 return function()
   local buf = vim.api.nvim_create_buf(false, true)
+
+  -- close nvchad buffer by pressing q
+  vim.keymap.set("n", "q", function()
+    close(buf)
+  end, { nowait = true, buffer = buf })
 
   -- add left padding (strs) to ascii so it looks centered
   ---@type string[]
