@@ -133,10 +133,13 @@ local function rgb2hex(r, g, b)
 end
 
 --- A function to mix two colors by averaging their RGB values
----@param color1 string
----@param color2 string
----@return string
+---@param color1 string | nil
+---@param color2 string | nil
+---@return string | nil
 function M.mixColors(color1, color2)
+  if color1 == nil or color2 == nil then
+    return nil
+  end
   -- Convert the colors from hex to RGB
   local r1, g1, b1 = hex2rgb(color1)
   local r2, g2, b2 = hex2rgb(color2)
@@ -153,7 +156,7 @@ end
 --- A function that takes red and yellow colors and returns orange color
 ---@param red string
 ---@param yellow string
----@return string
+---@return string | nil
 M.getOrangeColor = function(red, yellow)
   -- Mix red and yellow colors using the mixColors function
   local orange = M.mixColors(red or "#f7768e", yellow or "#e0af68")
