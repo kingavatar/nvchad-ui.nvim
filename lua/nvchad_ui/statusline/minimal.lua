@@ -15,16 +15,16 @@ local separators = (type(sep_style) == "table" and sep_style) or default_sep_ico
 
 local sep_l = separators["left"]
 -- local sep_r = "%#St_sep_r#" .. separators["right"] .. " %#ST_EmptySpace#"
+local lualine_hl = ""
 
 local M = {}
 
----@param lualine_hl string
-local sepR = function(lualine_hl)
-  return "%#St_sep_r" .. lualine_hl .. "#" .. separators["right"] .. " %#ST_EmptySpace#"
+local sepR = function(ll_hl)
+  return "%#St_sep_r" .. ll_hl .. "#" .. separators["right"] .. " %#ST_EmptySpace#"
 end
 
-local function gen_block(icon, txt, sep_l_hlgroup, iconHl_group, txt_hl_group, lualine_hl)
-  return sep_l_hlgroup .. sep_l .. iconHl_group .. icon .. " " .. txt_hl_group .. " " .. txt .. sepR(lualine_hl)
+local function gen_block(icon, txt, sep_l_hlgroup, iconHl_group, txt_hl_group, ll_hl)
+  return sep_l_hlgroup .. sep_l .. iconHl_group .. icon .. " " .. txt_hl_group .. " " .. txt .. sepR(ll_hl)
 end
 
 M.modes = {
@@ -58,8 +58,7 @@ M.modes = {
 }
 
 ---@param mode string
----@param lualine_hl string
-M.mode = function(mode, lualine_hl)
+M.mode = function(mode)
   return gen_block(
     "",
     M.modes[mode][1],
@@ -70,8 +69,7 @@ M.mode = function(mode, lualine_hl)
   )
 end
 
----@param lualine_hl string
-M.fileInfo = function(lualine_hl)
+M.fileInfo = function()
   local icon = ""
   local filename = (fn.expand "%" == "" and "Empty") or fn.expand "%:t"
 
@@ -86,7 +84,7 @@ M.fileInfo = function(lualine_hl)
     end
   end
 
-  return gen_block(icon, filename, "%#St_file_sep#", "%#St_file_bg#", "%#St_file_txt#", lualine_hl)
+  return gen_block(icon, filename, "%#St_file_sep#", "%#St_file_bg#", "%#St_file_txt#", "")
 end
 
 M.git = function()
@@ -169,8 +167,7 @@ M.noice = function()
   return noice_status
 end
 
----@param lualine_hl string
-M.lazy_updates = function(lualine_hl)
+M.lazy_updates = function()
   if require("lazy.status").has_updates() then
     ---@type {updated: string[]}
     local Checker = require "lazy.manage.checker"
@@ -187,8 +184,7 @@ M.lazy_updates = function(lualine_hl)
   return ""
 end
 
----@param lualine_hl string
-M.LSP_status = function(lualine_hl)
+M.LSP_status = function()
   if rawget(vim, "lsp") then
     ---@diagnostic disable-next-line: no-unknown
     for _, client in ipairs(vim.lsp.get_active_clients()) do
@@ -209,23 +205,14 @@ M.LSP_status = function(lualine_hl)
   end
 end
 
----@param lualine_hl string
-M.cwd = function(lualine_hl)
+M.cwd = function()
   return (
     vim.o.columns > 85
-    and gen_block(
-      "",
-      fn.fnamemodify(fn.getcwd(), ":t"),
-      "%#St_cwd_sep#",
-      "%#St_cwd_bg#",
-      "%#St_cwd_txt#",
-      lualine_hl
-    )
+    and gen_block("", fn.fnamemodify(fn.getcwd(), ":t"), "%#St_cwd_sep#", "%#St_cwd_bg#", "%#St_cwd_txt#", "")
   ) or ""
 end
 
----@param lualine_hl string
-M.pos = function(lualine_hl)
+M.pos = function()
   return gen_block(
     "",
     "%l/%c",
@@ -247,11 +234,11 @@ M.run = function()
   end
 
   local m = vim.api.nvim_get_mode().mode
-  local lualine_hl = use_lualine() and M.modes[m][3] or ""
+  lualine_hl = use_lualine() and M.modes[m][3] or ""
 
   return table.concat {
-    modules.mode(m, lualine_hl),
-    modules.fileInfo(lualine_hl),
+    modules.mode(m),
+    modules.fileInfo(),
     modules.git(),
 
     "%=",
@@ -261,10 +248,10 @@ M.run = function()
     string.upper(vim.bo.fileencoding) == "" and "" or string.upper(vim.bo.fileencoding) .. "  ",
     modules.LSP_Diagnostics(),
     use_lazyvim and modules.noice() or "",
-    use_lazyvim and modules.lazy_updates(lualine_hl) or "",
-    modules.LSP_status(lualine_hl) or "",
-    modules.cwd(lualine_hl),
-    modules.pos(lualine_hl),
+    use_lazyvim and modules.lazy_updates() or "",
+    modules.LSP_status() or "",
+    modules.cwd(),
+    modules.pos(),
   }
 end
 
