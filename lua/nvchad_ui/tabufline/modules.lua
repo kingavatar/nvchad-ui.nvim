@@ -92,10 +92,8 @@ local function add_fileInfo(name, bufnr)
 
             if value_current ~= other_current then
               if (#current - i) < 2 then
-                ---@type string
                 name = value_current .. "/" .. name
               else
-                ---@type string
                 name = value_current .. "/../" .. name
               end
               break
