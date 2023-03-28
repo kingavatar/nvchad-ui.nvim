@@ -193,6 +193,11 @@ M.telescope = {
     ["<leader>fr"] = { "", "Recent" },
     ["<leader>gc"] = { "", "commits" },
     ["<leader>gs"] = { "", "status" },
+    ["<leader>uC"] = { "", "Colorscheme with preview" },
+    ["<leader>ss"] = { "", "Goto Symbol" },
+    ["<leader>sS"] = { "", "Goto Symbol (Workspace)" },
+  },
+  search = {
     ["<leader>sa"] = { "", "Auto Commands" },
     ["<leader>sb"] = { "", "Buffer" },
     ["<leader>sc"] = { "", "Command History" },
@@ -209,9 +214,6 @@ M.telescope = {
     ["<leader>sR"] = { "", "Resume" },
     ["<leader>sw"] = { "", "Word (root dir)" },
     ["<leader>sW"] = { "", "Word (cwd)" },
-    ["<leader>uC"] = { "", "Colorscheme with preview" },
-    ["<leader>ss"] = { "", "Goto Symbol" },
-    ["<leader>sS"] = { "", "Goto Symbol (Workspace)" },
   },
 }
 
