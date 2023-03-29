@@ -32,7 +32,7 @@
 ---@field header string[] dashboard header
 ---@field buttons table<NvChadButton> dashboard buttons
 
----@alias NvChadButton string[3] NvChad dashboard button
+---@alias NvChadButton string[] NvChad dashboard button
 
 ---@alias NvChadCheatsheet table<string, table<NvChadModes, table<string, table<string | table>>>>>
 

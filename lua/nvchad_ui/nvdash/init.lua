@@ -63,10 +63,12 @@ M.open = function(buf)
     end
 
     local function addPadding_toHeader(str)
+      ---@type number
       local pad = (api.nvim_win_get_width(0) - fn.strwidth(str)) / 2
       return string.rep(" ", math.floor(pad)) .. str .. " "
     end
 
+    ---@type string[]
     local dashboard = {}
 
     for _, val in ipairs(header) do
@@ -84,6 +86,7 @@ M.open = function(buf)
       max_height = max_height + 3
     end
 
+    ---@type string[]
     local result = {}
 
     -- make all lines available
@@ -133,38 +136,27 @@ M.open = function(buf)
     vim.keymap.set("n", "l", "", { buffer = true })
     vim.keymap.set("n", "<Right>", "", { buffer = true })
 
-    vim.keymap.set("n", "k", function()
+    local function upward_movement()
       local cur = fn.line "."
-      local target_line = vim.tbl_contains(keybind_lineNrs, cur) and keybind_lineNrs[1] ~= cur and cur - 2
-        or keybind_lineNrs[#keybind_lineNrs]
+      local target_line = keybind_lineNrs[1] >= cur and keybind_lineNrs[#keybind_lineNrs] or cur - 2
       api.nvim_win_set_cursor(0, { target_line, math.floor(vim.o.columns / 2) - 13 })
-    end, { buffer = true })
+    end
 
-    vim.keymap.set("n", "<Up>", function()
+    local function downward_movement()
       local cur = fn.line "."
-      local target_line = vim.tbl_contains(keybind_lineNrs, cur) and keybind_lineNrs[1] ~= cur and cur - 2
-        or keybind_lineNrs[#keybind_lineNrs]
+      local target_line = keybind_lineNrs[#keybind_lineNrs] <= cur and keybind_lineNrs[1] or cur + 2
       api.nvim_win_set_cursor(0, { target_line, math.floor(vim.o.columns / 2) - 13 })
-    end, { buffer = true })
+    end
 
-    vim.keymap.set("n", "j", function()
-      local cur = fn.line "."
-      local target_line = vim.tbl_contains(keybind_lineNrs, cur)
-          and keybind_lineNrs[#keybind_lineNrs] ~= cur
-          and cur + 2
-        or keybind_lineNrs[1]
-      api.nvim_win_set_cursor(0, { target_line, math.floor(vim.o.columns / 2) - 13 })
-    end, { buffer = true })
+    vim.keymap.set("n", "k", upward_movement, { buffer = true })
 
-    vim.keymap.set("n", "<Down>", function()
-      local cur = fn.line "."
-      local target_line = vim.tbl_contains(keybind_lineNrs, cur)
-          and keybind_lineNrs[#keybind_lineNrs] ~= cur
-          and cur + 2
-        or keybind_lineNrs[1]
-      api.nvim_win_set_cursor(0, { target_line, math.floor(vim.o.columns / 2) - 13 })
-    end, { buffer = true })
+    vim.keymap.set("n", "<Up>", upward_movement, { buffer = true })
 
+    vim.keymap.set("n", "j", downward_movement, { buffer = true })
+
+    vim.keymap.set("n", "<Down>", downward_movement, { buffer = true })
+
+    -- Set single keystroke keymaps if available
     for i, _ in ipairs(keybind_lineNrs) do
       local keymap = options.buttons[i][2] or ""
       if keymap:len() == 1 then
