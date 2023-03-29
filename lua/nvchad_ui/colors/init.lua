@@ -4,6 +4,7 @@ local statusline = require "nvchad_ui.colors.statusline"
 local tbline = require "nvchad_ui.colors.tbline"
 local nvdash = require "nvchad_ui.colors.nvdash"
 local nvcheatsheet = require "nvchad_ui.colors.nvcheatsheet"
+local renamer = require "nvchad_ui.colors.renamer"
 local g = vim.g
 
 g.toggle_theme_icon = "   "
@@ -13,13 +14,15 @@ M.load_all_highlights = function()
   tbline.apply_highlights()
   nvdash.apply_highlights()
   nvcheatsheet.apply_highlights()
+  renamer.apply_highlights()
   ---@type table<string, table<string, any>>
   local groups = vim.tbl_extend(
     "keep",
     statusline[options.statusline.theme],
     tbline.highlights,
     nvdash.highlights,
-    nvcheatsheet.highlights
+    nvcheatsheet.highlights,
+    renamer.highlights
   )
   for hl, col in pairs(groups) do
     vim.api.nvim_set_hl(0, hl, col)
