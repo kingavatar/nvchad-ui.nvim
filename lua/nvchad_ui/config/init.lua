@@ -91,10 +91,12 @@ function M.setup(opts)
     end
   end, {})
 
+  local nvdash = require "nvchad_ui.nvdash"
+
   -- load nvdash
-  if M.options.nvdash.load_on_startup then
+  if M.options.nvdash.load_on_startup and not M.options.lazyVim then
     vim.defer_fn(function()
-      require("nvchad_ui.nvdash").open()
+      nvdash.open()
     end, 0)
   end
 
@@ -129,17 +131,35 @@ function M.setup(opts)
     if M.options.theme_toggle == nil then
       M.options.theme_toggle = { "tokyonight-day", "tokyonight" }
     end
+
+    vim.api.nvim_create_autocmd("User", {
+      pattern = "LazyVimStarted",
+      callback = nvdash.lazyVim_callback,
+    })
+
     vim.keymap.set("n", "<leader>ch", "<cmd> NvCheatsheet <CR>", { desc = "Mapping cheatsheet" })
+
     M.options.nvdash.buttons = {
-      { "  Find File", "Spc f f", "Telescope find_files" },
-      { "  Recent Files", "Spc f r", "Telescope oldfiles" },
-      { "  Find Word", "Spc s g", "Telescope live_grep" },
-      { "  Bookmarks", "Spc s m", "Telescope marks" },
-      { "  Themes", "Spc u C", "Telescope themes" },
-      { "  Mappings", "Spc c h", "NvCheatsheet" },
+      { "  Find File", "f", "Telescope find_files" },
+      { "  Recent Files", "r", "Telescope oldfiles" },
+      { "  Find Word", "g", "Telescope live_grep" },
+      { "  Bookmarks", "b", "Telescope marks" },
+      { "  Themes", "t", "Telescope themes" },
+      { "  Mappings", "m", "NvCheatsheet" },
+      { "  Config", "c", "e $MYVIMRC " },
+      {
+        "  Restore Session",
+        "s",
+        function()
+          require("persistence").load()
+        end,
+      },
+      { "󰒲  Lazy", "l", "Lazy" },
+      { "  Quit", "q", "qa" },
     }
+
+    M.options.mappings = vim.tbl_deep_extend("force", require "nvchad_ui.cheatsheet.lazyvim", M.options.mappings)
   end
-  M.options.mappings = vim.tbl_deep_extend("force", require "nvchad_ui.cheatsheet.lazyvim", M.options.mappings)
 end
 
 return M

@@ -18,6 +18,11 @@ M.apply_highlights = function()
       fg = colors.white,
       bg = colors.bright_black,
     },
+
+    NvDashNoiceStats = {
+      fg = colors.special,
+      bg = colors.black,
+    },
   }
 end
 

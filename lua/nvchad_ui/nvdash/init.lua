@@ -5,6 +5,7 @@ local fn = vim.fn
 -- dofile(vim.g.base46_cache .. "nvdash")
 
 local options = require("nvchad_ui.config").options.nvdash
+local is_lazyvim = require("nvchad_ui.config").options.lazyVim
 
 local headerAscii = options.header
 local emmptyLine = string.rep(" ", vim.fn.strwidth(headerAscii[1]))
@@ -27,6 +28,7 @@ local nvdashWidth = #headerAscii[1] + 3
 
 local max_height = #headerAscii + 4 + (2 * #options.buttons) -- 4  = extra spaces i.e top/bottom
 local get_win_height = api.nvim_win_get_height
+local footer = "⚡ Neovim loading "
 
 M.open = function(buf)
   if vim.fn.expand "%" == "" or buf then
@@ -75,6 +77,12 @@ M.open = function(buf)
       table.insert(dashboard, addSpacing_toBtns(val[1], val[2]) .. " ")
       table.insert(dashboard, header[1] .. " ")
     end
+    if is_lazyvim then
+      table.insert(dashboard, header[1] .. " ")
+      table.insert(dashboard, footer)
+      table.insert(dashboard, header[1] .. " ")
+      max_height = max_height + 3
+    end
 
     local result = {}
 
@@ -101,8 +109,13 @@ M.open = function(buf)
       api.nvim_buf_add_highlight(buf, nvdash, "NvDashAscii", i, horiz_pad_index, -1)
     end
 
-    for i = abc + #header - 2, abc + #dashboard do
+    for i = abc + #header - 2, is_lazyvim and abc + #dashboard - 5 or abc + #dashboard - 1 do
       api.nvim_buf_add_highlight(buf, nvdash, "NvDashButtons", i, horiz_pad_index, -1)
+    end
+    if is_lazyvim then
+      for i = abc + #dashboard - 4, abc + #dashboard - 2 do
+        api.nvim_buf_add_highlight(buf, nvdash, "NvDashNoiceStats", i, horiz_pad_index, -1)
+      end
     end
 
     api.nvim_win_set_cursor(0, { abc + #header, math.floor(vim.o.columns / 2) - 13 })
@@ -152,6 +165,20 @@ M.open = function(buf)
       api.nvim_win_set_cursor(0, { target_line, math.floor(vim.o.columns / 2) - 13 })
     end, { buffer = true })
 
+    for i, _ in ipairs(keybind_lineNrs) do
+      local keymap = options.buttons[i][2] or ""
+      if keymap:len() == 1 then
+        vim.keymap.set("n", keymap, function()
+          local action = options.buttons[i][3]
+          if type(action) == "string" then
+            vim.cmd(action)
+          elseif type(action) == "function" then
+            action()
+          end
+        end, { buffer = true, silent = true, nowait = true })
+      end
+    end
+
     -- pressing enter on
     vim.keymap.set("n", "<CR>", function()
       for i, val in ipairs(keybind_lineNrs) do
@@ -175,6 +202,15 @@ M.open = function(buf)
     vim.opt_local.relativenumber = false
     vim.opt_local.wrap = false
     vim.opt_local.cul = false
+  end
+end
+
+M.lazyVim_callback = function()
+  local stats = require("lazy").stats()
+  local ms = (math.floor(stats.startuptime * 100 + 0.5) / 100)
+  footer = "⚡ Neovim loaded " .. stats.count .. " plugins in " .. ms .. "ms"
+  if options.load_on_startup then
+    M.open()
   end
 end
 
