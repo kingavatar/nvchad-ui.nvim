@@ -33,22 +33,29 @@ local footer = "⚡ Neovim loading "
 M.open = function(buf)
   if vim.fn.expand "%" == "" or buf then
     buf = buf or api.nvim_create_buf(false, true)
-    api.nvim_win_set_buf(api.nvim_get_current_win(), buf)
-
-    if get_win_height(0) < max_height then
-      return
-    end
-
-    vim.opt_local.filetype = "nvdash"
+    ---@type integer | nil
+    local win = nil
+    local was_lazy_open = false
 
     -- close windows i.e splits
     for _, winnr in ipairs(api.nvim_list_wins()) do
       if api.nvim_win_is_valid(winnr) then
+        if win == nil and api.nvim_win_get_config(winnr).relative == "" then
+          win = winnr
+          api.nvim_win_set_buf(win, buf)
+        end
         local bufnr = api.nvim_win_get_buf(winnr)
-        if api.nvim_buf_is_valid(bufnr) and (vim.bo[bufnr]).ft ~= "nvdash" then
-          api.nvim_win_close(winnr, true)
+        if api.nvim_buf_is_valid(bufnr) and winnr ~= win then
+          was_lazy_open = was_lazy_open or vim.bo[bufnr].ft == "lazy"
+          api.nvim_win_close(winnr, api.nvim_win_get_config(winnr).relative == "")
         end
       end
+    end
+
+    vim.opt_local.filetype = "nvdash"
+
+    if get_win_height(win) < max_height then
+      return
     end
 
     vim.g.nvdash_displayed = true
@@ -90,12 +97,12 @@ M.open = function(buf)
     local result = {}
 
     -- make all lines available
-    for i = 1, get_win_height(0) do
+    for i = 1, get_win_height(win) do
       result[i] = ""
     end
 
-    local headerStart_Index = math.floor((get_win_height(0) / 2) - (#dashboard / 2))
-    local abc = math.floor((get_win_height(0) / 2) - (#dashboard / 2))
+    local headerStart_Index = math.floor((get_win_height(win) / 2) - (#dashboard / 2))
+    local abc = math.floor((get_win_height(win) / 2) - (#dashboard / 2))
 
     -- set ascii
     for _, val in ipairs(dashboard) do
@@ -194,6 +201,10 @@ M.open = function(buf)
     vim.opt_local.relativenumber = false
     vim.opt_local.wrap = false
     vim.opt_local.cul = false
+
+    if was_lazy_open then
+      require("lazy").show()
+    end
   end
 end
 
