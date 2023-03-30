@@ -92,10 +92,9 @@ function M.setup(opts)
   end, {})
 
   -- load nvdash
-  if M.options.nvdash.load_on_startup then
-    vim.defer_fn(function()
-      require("nvchad_ui.nvdash").open()
-    end, 0)
+  local nvdash = require "nvchad_ui.nvdash"
+  if M.options.nvdash.load_on_startup and not M.options.lazyVim then
+    vim.defer_fn(nvdash.open, 0)
   end
 
   -- command to toggle cheatsheet
