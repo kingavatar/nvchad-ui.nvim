@@ -91,12 +91,10 @@ function M.setup(opts)
     end
   end, {})
 
-  local nvdash = require "nvchad_ui.nvdash"
-
   -- load nvdash
-  if M.options.nvdash.load_on_startup and not M.options.lazyVim then
+  if M.options.nvdash.load_on_startup then
     vim.defer_fn(function()
-      nvdash.open()
+      require("nvchad_ui.nvdash").open()
     end, 0)
   end
 

@@ -69,7 +69,8 @@ M.mode = function(mode)
   )
 end
 
-M.fileInfo = function()
+---@param lualine_hl string
+M.fileInfo = function(lualine_hl)
   local icon = ""
   local filename = (fn.expand "%" == "" and "Empty") or fn.expand "%:t"
 
@@ -205,7 +206,8 @@ M.LSP_status = function()
   end
 end
 
-M.cwd = function()
+---@param lualine_hl string
+M.cwd = function(lualine_hl)
   return (
     vim.o.columns > 85
     and gen_block("", fn.fnamemodify(fn.getcwd(), ":t"), "%#St_cwd_sep#", "%#St_cwd_bg#", "%#St_cwd_txt#", "")

@@ -35,10 +35,6 @@ M.open = function(buf)
     buf = buf or api.nvim_create_buf(false, true)
     api.nvim_win_set_buf(api.nvim_get_current_win(), buf)
 
-    if get_win_height(0) < max_height then
-      return
-    end
-
     vim.opt_local.filetype = "nvdash"
 
     -- close windows i.e splits
@@ -90,12 +86,12 @@ M.open = function(buf)
     local result = {}
 
     -- make all lines available
-    for i = 1, get_win_height(0) do
+    for i = 1, math.max(get_win_height(0), max_height) do
       result[i] = ""
     end
 
-    local headerStart_Index = math.floor((get_win_height(0) / 2) - (#dashboard / 2))
-    local abc = math.floor((get_win_height(0) / 2) - (#dashboard / 2))
+    local headerStart_Index = math.abs(math.floor((get_win_height(0) / 2) - (#dashboard / 2))) + 1 -- 1 = To handle zero case
+    local abc = math.abs(math.floor((get_win_height(0) / 2) - (#dashboard / 2))) + 1 -- 1 = To handle zero case
 
     -- set ascii
     for _, val in ipairs(dashboard) do
