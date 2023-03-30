@@ -33,20 +33,31 @@ local footer = "⚡ Neovim loading "
 M.open = function(buf)
   if vim.fn.expand "%" == "" or buf then
     buf = buf or api.nvim_create_buf(false, true)
-    api.nvim_win_set_buf(api.nvim_get_current_win(), buf)
-
-    vim.opt_local.filetype = "nvdash"
+    ---@type integer | nil
+    local win = nil
+    local was_lazy_open = false
 
     -- close windows i.e splits
     for _, winnr in ipairs(api.nvim_list_wins()) do
       if api.nvim_win_is_valid(winnr) then
+        if win == nil and api.nvim_win_get_config(winnr).relative == "" then
+          win = winnr
+          api.nvim_win_set_buf(win, buf)
+        end
         local bufnr = api.nvim_win_get_buf(winnr)
-        if api.nvim_buf_is_valid(bufnr) and (vim.bo[bufnr]).ft ~= "nvdash" then
-          api.nvim_win_close(winnr, true)
+        was_lazy_open = vim.bo[bufnr].ft == "lazy" or was_lazy_open
+        if api.nvim_buf_is_valid(bufnr) and win ~= winnr then
+          api.nvim_win_close(winnr, api.nvim_win_get_config(winnr).relative == "")
         end
       end
     end
 
+    -- This should not happen but lets handle it anyway
+    if win == nil then
+      return
+    end
+
+    vim.opt_local.filetype = "nvdash"
     vim.g.nvdash_displayed = true
 
     local header = headerAscii
@@ -60,7 +71,7 @@ M.open = function(buf)
 
     local function addPadding_toHeader(str)
       ---@type number
-      local pad = (api.nvim_win_get_width(0) - fn.strwidth(str)) / 2
+      local pad = (api.nvim_win_get_width(win) - fn.strwidth(str)) / 2
       return string.rep(" ", math.floor(pad)) .. str .. " "
     end
 
@@ -86,12 +97,12 @@ M.open = function(buf)
     local result = {}
 
     -- make all lines available
-    for i = 1, math.max(get_win_height(0), max_height) do
+    for i = 1, math.max(get_win_height(win), max_height) do
       result[i] = ""
     end
 
-    local headerStart_Index = math.abs(math.floor((get_win_height(0) / 2) - (#dashboard / 2))) + 1 -- 1 = To handle zero case
-    local abc = math.abs(math.floor((get_win_height(0) / 2) - (#dashboard / 2))) + 1 -- 1 = To handle zero case
+    local headerStart_Index = math.abs(math.floor((get_win_height(win) / 2) - (#dashboard / 2))) + 1 -- 1 = To handle zero case
+    local abc = math.abs(math.floor((get_win_height(win) / 2) - (#dashboard / 2))) + 1 -- 1 = To handle zero case
 
     -- set ascii
     for _, val in ipairs(dashboard) do
@@ -102,7 +113,7 @@ M.open = function(buf)
     api.nvim_buf_set_lines(buf, 0, -1, false, result)
 
     local nvdash = api.nvim_create_namespace "nvdash"
-    local horiz_pad_index = math.floor((api.nvim_win_get_width(0) / 2) - (nvdashWidth / 2)) - 2
+    local horiz_pad_index = math.floor((api.nvim_win_get_width(win) / 2) - (nvdashWidth / 2)) - 2
 
     for i = abc, abc + #header do
       api.nvim_buf_add_highlight(buf, nvdash, "NvDashAscii", i, horiz_pad_index, -1)
@@ -117,7 +128,7 @@ M.open = function(buf)
       end
     end
 
-    api.nvim_win_set_cursor(0, { abc + #header, math.floor(vim.o.columns / 2) - 13 })
+    api.nvim_win_set_cursor(win, { abc + #header, math.floor(vim.o.columns / 2) - 13 })
 
     local first_btn_line = abc + #header + 2
     local keybind_lineNrs = {}
@@ -135,13 +146,13 @@ M.open = function(buf)
     local function upward_movement()
       local cur = fn.line "."
       local target_line = keybind_lineNrs[1] >= cur and keybind_lineNrs[#keybind_lineNrs] or cur - 2
-      api.nvim_win_set_cursor(0, { target_line, math.floor(vim.o.columns / 2) - 13 })
+      api.nvim_win_set_cursor(win, { target_line, math.floor(vim.o.columns / 2) - 13 })
     end
 
     local function downward_movement()
       local cur = fn.line "."
       local target_line = keybind_lineNrs[#keybind_lineNrs] <= cur and keybind_lineNrs[1] or cur + 2
-      api.nvim_win_set_cursor(0, { target_line, math.floor(vim.o.columns / 2) - 13 })
+      api.nvim_win_set_cursor(win, { target_line, math.floor(vim.o.columns / 2) - 13 })
     end
 
     vim.keymap.set("n", "k", upward_movement, { buffer = true })
@@ -190,6 +201,10 @@ M.open = function(buf)
     vim.opt_local.relativenumber = false
     vim.opt_local.wrap = false
     vim.opt_local.cul = false
+
+    if was_lazy_open then
+      require("lazy").show()
+    end
   end
 end
 
