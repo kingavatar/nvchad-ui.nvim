@@ -12,9 +12,7 @@ g.toggle_theme_icon = "   "
 local can_use_lualine = false
 
 M.load_all_highlights = function()
-  if vim.g.colors_name ~= nil then
-    require("nvchad_ui.colors.default").apply_default()
-  end
+  if vim.g.colors_name == nil then require("nvchad_ui.colors.default").apply_default() end
   statusline.apply_highlights(options.statusline.theme)
   can_use_lualine = statusline.can_use_lualine
   tbline.apply_highlights()
@@ -52,9 +50,7 @@ end
 
 ---check if we can use lualine colors
 ---@return boolean
-M.can_use_lualine = function()
-  return can_use_lualine
-end
+M.can_use_lualine = function() return can_use_lualine end
 
 ---Lazylaod on startup from cache
 M.load_on_startup = function()
