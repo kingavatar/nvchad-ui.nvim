@@ -225,8 +225,7 @@ M.table_to_str = function(groups)
     local opts = ""
 
     for optName, optVal in pairs(hlgroup_vals) do
-      local valueInStr = ((type(optVal)) == "boolean" or type(optVal) == "number") and tostring(optVal)
-        or '"' .. optVal .. '"'
+      local valueInStr = ((type(optVal)) == "boolean" or type(optVal) == "number") and tostring(optVal) or '"' .. optVal .. '"'
       opts = opts .. optName .. "=" .. valueInStr .. ","
     end
 

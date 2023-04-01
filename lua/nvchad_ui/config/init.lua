@@ -2,6 +2,7 @@
 local M = {}
 
 local api = vim.api
+vim.g.base46_cache = vim.fn.stdpath "data" .. "/nvchad/base46/"
 
 --- NvChad UI options
 --- Hover on individual properties for more details
@@ -64,7 +65,31 @@ function M.setup(opts)
   local new_cmd = api.nvim_create_user_command
   api.nvim_create_augroup("nvchad_ui", {})
   local colors = require "nvchad_ui.colors"
-  colors.load_on_startup()
+
+  local settings_cache_path = vim.g.base46_cache .. "settings"
+
+  if not vim.loop.fs_stat(vim.g.base46_cache) then
+    vim.fn.mkdir(vim.g.base46_cache, "p")
+  end
+
+  ---@type any
+  local cached = nil
+  local file = io.open(settings_cache_path)
+  if file then
+    cached = file:read()
+    file:close()
+  end
+  local hash = require("nvchad_ui.util").hash(M.options)
+  if cached ~= hash then
+    colors.load_all_highlights()
+    file = io.open(settings_cache_path, "wb")
+    if file then
+      file:write(hash)
+      file:close()
+    end
+  else
+    colors.load_on_startup()
+  end
 
   --- Auto refresh highlights on colorscheme change
   api.nvim_create_autocmd("ColorScheme", {

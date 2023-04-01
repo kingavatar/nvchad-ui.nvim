@@ -9,10 +9,14 @@ local renamer = require "nvchad_ui.colors.renamer"
 local g = vim.g
 
 g.toggle_theme_icon = "   "
-g.base46_cache = vim.fn.stdpath "data" .. "/nvchad/base46/"
+local can_use_lualine = false
 
 M.load_all_highlights = function()
+  if vim.g.colors_name ~= nil then
+    require("nvchad_ui.colors.default").apply_default()
+  end
   statusline.apply_highlights(options.statusline.theme)
+  can_use_lualine = statusline.can_use_lualine
   tbline.apply_highlights()
   nvdash.apply_highlights()
   nvcheatsheet.apply_highlights()
@@ -49,16 +53,12 @@ end
 ---check if we can use lualine colors
 ---@return boolean
 M.can_use_lualine = function()
-  return statusline.can_use_lualine
+  return can_use_lualine
 end
 
 ---Lazylaod on startup from cache
 M.load_on_startup = function()
-  if not vim.loop.fs_stat(vim.g.base46_cache) then
-    vim.fn.mkdir(vim.g.base46_cache, "p")
-    M.load_all_highlights()
-    return
-  end
+  can_use_lualine = options.statusline.lualine
   dofile(g.base46_cache .. "default")
 end
 

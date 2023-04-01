@@ -452,8 +452,7 @@ M.apply_highlights = function(theme)
   ---@param col string
   local function genModes_hl(modename, col)
     M.default["St_" .. modename .. "Mode"] = { fg = colors.black, bg = colors[col], bold = true }
-    M.default["St_" .. modename .. "ModeSep"] =
-      { fg = colors[col], bg = utils.extract_highlight_colors("NonText", "fg") }
+    M.default["St_" .. modename .. "ModeSep"] = { fg = colors[col], bg = utils.extract_highlight_colors("NonText", "fg") }
     M.vscode_colored["St_" .. modename .. "Mode"] = { fg = colors[col], bg = colors.one_bg3, bold = true }
 
     M.minimal["St_" .. modename .. "Mode"] = { fg = colors.black, bg = colors[col], bold = true }
@@ -467,8 +466,7 @@ M.apply_highlights = function(theme)
       M.vscode_colored["St_" .. modename .. "Mode"] =
         { fg = lualineColors[lualineMode[modename]].a.bg, bg = lualineColors[lualineMode[modename]].b.bg, bold = true }
 
-      M.minimal["St_" .. modename .. "Mode"] =
-        { fg = colors.black, bg = lualineColors[lualineMode[modename]].a.bg, bold = true }
+      M.minimal["St_" .. modename .. "Mode"] = { fg = colors.black, bg = lualineColors[lualineMode[modename]].a.bg, bold = true }
       M.minimal["St_" .. modename .. "ModeSep"] =
         { fg = lualineColors[lualineMode[modename]].a.bg, bg = colors.black, bold = true }
       M.minimal["St_" .. modename .. "modeText"] =
