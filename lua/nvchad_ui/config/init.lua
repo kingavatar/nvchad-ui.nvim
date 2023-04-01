@@ -64,7 +64,7 @@ function M.setup(opts)
   local new_cmd = api.nvim_create_user_command
   api.nvim_create_augroup("nvchad_ui", {})
   local colors = require "nvchad_ui.colors"
-  colors.load_all_highlights()
+  colors.load_on_startup()
 
   --- Auto refresh highlights on colorscheme change
   api.nvim_create_autocmd("ColorScheme", {

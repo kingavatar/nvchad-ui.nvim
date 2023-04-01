@@ -212,4 +212,48 @@ M.color_is_bright = function(hex)
   return luminance > 0.5 -- if > 0.5 Bright colors, black font, otherwise Dark colors, white font
 end
 
+---@source https://github.com/NvChad/base46/blob/v2.0/lua/base46/init.lua#L85
+
+--- convert table into string
+---@param groups table<string, table<string, any?>>
+---@return string
+M.table_to_str = function(groups)
+  local result = ""
+
+  for hlgroupName, hlgroup_vals in pairs(groups) do
+    local hlname = "'" .. hlgroupName .. "',"
+    local opts = ""
+
+    for optName, optVal in pairs(hlgroup_vals) do
+      local valueInStr = ((type(optVal)) == "boolean" or type(optVal) == "number") and tostring(optVal)
+        or '"' .. optVal .. '"'
+      opts = opts .. optName .. "=" .. valueInStr .. ","
+    end
+
+    result = result .. "vim.api.nvim_set_hl(0," .. hlname .. "{" .. opts .. "})"
+  end
+
+  return result
+end
+
+M.saveStr_to_cache = function(groups)
+  -- Thanks to https://github.com/nullchilly and https://github.com/EdenEast/nightfox.nvim
+
+  local lines = "return string.dump(function()" .. M.table_to_str(groups) .. "end, true)"
+  local file = io.open(vim.g.base46_cache .. "default", "wb")
+
+  if file then
+    file:write(loadstring(lines)())
+    file:close()
+  end
+end
+
+--- Load highlights
+---@param groups table<string, table<string, any?>>
+M.load = function(groups)
+  for hl, col in pairs(groups) do
+    vim.api.nvim_set_hl(0, hl, col)
+  end
+end
+
 return M

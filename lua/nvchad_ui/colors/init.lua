@@ -1,5 +1,6 @@
 local M = {}
 local options = require("nvchad_ui.config").options
+local utils = require "nvchad_ui.colors.utils"
 local statusline = require "nvchad_ui.colors.statusline"
 local tbline = require "nvchad_ui.colors.tbline"
 local nvdash = require "nvchad_ui.colors.nvdash"
@@ -8,6 +9,7 @@ local renamer = require "nvchad_ui.colors.renamer"
 local g = vim.g
 
 g.toggle_theme_icon = "   "
+g.base46_cache = vim.fn.stdpath "data" .. "/nvchad/base46/"
 
 M.load_all_highlights = function()
   statusline.apply_highlights(options.statusline.theme)
@@ -24,9 +26,8 @@ M.load_all_highlights = function()
     nvcheatsheet.highlights,
     renamer.highlights
   )
-  for hl, col in pairs(groups) do
-    vim.api.nvim_set_hl(0, hl, col)
-  end
+  utils.load(groups)
+  utils.saveStr_to_cache(groups)
 end
 
 M.toggle_theme = function()
@@ -49,6 +50,16 @@ end
 ---@return boolean
 M.can_use_lualine = function()
   return statusline.can_use_lualine
+end
+
+---Lazylaod on startup from cache
+M.load_on_startup = function()
+  if not vim.loop.fs_stat(vim.g.base46_cache) then
+    vim.fn.mkdir(vim.g.base46_cache, "p")
+    M.load_all_highlights()
+    return
+  end
+  dofile(g.base46_cache .. "default")
 end
 
 return M
