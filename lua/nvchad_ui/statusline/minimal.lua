@@ -75,11 +75,10 @@ M.fileInfo = function(lualine_hl)
   local filename = (fn.expand "%" == "" and "Empty") or fn.expand "%:t"
 
   if filename ~= "Empty" then
-    ---@type boolean ,{get_icon: fun(string) : string}
+    ---@type boolean ,{get_icon: fun(string) : string?}
     local devicons_present, devicons = pcall(require, "nvim-web-devicons")
 
     if devicons_present then
-      ---@type string?
       local ft_icon = devicons.get_icon(filename)
       icon = (ft_icon ~= nil and ft_icon) or icon
     end
@@ -158,12 +157,18 @@ end
 
 M.noice = function()
   local noice_status = "%#St_lspInfo#"
-  if package.loaded["noice"] and require("noice").api.status.command.has() then
-    noice_status = noice_status .. require("noice").api.status.command.get() .. " "
-  end
-  if package.loaded["noice"] and require("noice").api.status.mode.has() then
-    noice_status = noice_status .. require("noice").api.status.mode.get() .. " "
-  end
+  noice_status = package.loaded["noice"]
+      and require("noice").api.status.command.has()
+      and noice_status
+        .. require("noice").api.status.command.get() --[[@as string]]
+        .. " "
+    or noice_status
+  noice_status = package.loaded["noice"]
+      and require("noice").api.status.mode.has()
+      and noice_status
+        .. require("noice").api.status.mode.get() --[[@as string]]
+        .. " "
+    or noice_status
 
   return noice_status
 end

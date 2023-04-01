@@ -1,6 +1,7 @@
 local M = {}
 
 ---@source https://github.com/nvim-lualine/lualine.nvim/blob/master/lua/lualine/utils/utils.lua#L11
+
 ---Note for now only works for termguicolors scope can be bg or fg or any other
 ---attr parameter like bold/italic/reverse
 ---@param color_group string hl_group name
@@ -32,6 +33,7 @@ M.sep = package.config:sub(1, 1)
 local is_valid_filename = require("nvchad_ui.util").is_valid_filename
 
 ---@source https://github.com/nvim-lualine/lualine.nvim/blob/master/lua/lualine/utils/loader.lua#L212
+
 ---loads a theme from lua module
 ---prioritizes external themes (from user config or other plugins) over the bundled ones
 ---@param theme_name string
@@ -165,11 +167,13 @@ M.getOrangeColor = function(red, yellow)
 end
 
 ---@source https://github.com/akinsho/bufferline.nvim/blob/main/lua/bufferline/colors.lua#L16
+
 local function alter(attr, percent)
   return math.floor(attr * (100 + percent) / 100)
 end
 
 ---@source https://github.com/akinsho/bufferline.nvim/blob/main/lua/bufferline/colors.lua#L18
+
 ---Darken a specified hex color
 ---@param color string?
 ---@param percent number
@@ -188,6 +192,7 @@ M.shade_color = function(color, percent)
 end
 
 ---@source https://github.com/akinsho/bufferline.nvim/blob/main/lua/bufferline/colors.lua#L33
+
 --- Determine whether to use black or white text
 --- References:
 --- 1. https://stackoverflow.com/a/1855903/837964

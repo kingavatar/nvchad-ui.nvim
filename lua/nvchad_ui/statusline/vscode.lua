@@ -47,7 +47,6 @@ M.fileInfo = function()
     local devicons_present, devicons = pcall(require, "nvim-web-devicons")
 
     if devicons_present then
-      ---@type string
       local ft_icon = devicons.get_icon(filename)
       icon = (ft_icon ~= nil and " " .. ft_icon) or ""
     end

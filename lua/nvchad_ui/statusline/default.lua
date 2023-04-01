@@ -62,11 +62,10 @@ M.fileInfo = function(lualine_hl)
   local filename = (fn.expand "%" == "" and "Empty ") or fn.expand "%:t"
 
   if filename ~= "Empty " then
-    ---@type boolean ,{get_icon: fun(string) : string}
+    ---@type boolean ,{get_icon: fun(string) : string?}
     local devicons_present, devicons = pcall(require, "nvim-web-devicons")
 
     if devicons_present then
-      ---@type string?
       local ft_icon = devicons.get_icon(filename)
       icon = (ft_icon ~= nil and " " .. ft_icon) or ""
     end
@@ -117,8 +116,8 @@ M.LSP_progress = function()
   local frame = math.floor(ms / 120) % #spinners
   local content = string.format(" %%<%s %s %s (%s%%%%) ", spinners[frame + 1], title, msg, percentage)
 
-  if config.lsprogress_len then
-    content = string.sub(content, 1, config.lsprogress_len)
+  if options.lsprogress_len then
+    content = string.sub(content, 1, options.lsprogress_len)
   end
 
   return ("%#St_LspProgress#" .. content) or ""
@@ -219,15 +218,13 @@ M.cursor_position = function(lualine_hl)
 end
 
 M.run = function()
-  ---@type table
-  local modules = require "nvchad_ui.statusline.default"
+  local modules = require "nvchad_ui.statusline.default" --[[@as table]]
 
   if options.overriden_modules then
     modules = vim.tbl_deep_extend("force", modules, options.overriden_modules())
   end
 
-  ---@type string
-  local m = vim.api.nvim_get_mode().mode
+  local m = vim.api.nvim_get_mode().mode --[[@as string]]
   local lualine_hl = use_lualine() and M.modes[m][3] or ""
 
   return table.concat {

@@ -447,6 +447,9 @@ M.apply_highlights = function(theme)
   end
 
   ---@source https://github.com/NvChad/base46/blob/v2.0/lua/base46/integrations/statusline.lua#L267
+
+  ---@param modename string
+  ---@param col string
   local function genModes_hl(modename, col)
     M.default["St_" .. modename .. "Mode"] = { fg = colors.black, bg = colors[col], bold = true }
     M.default["St_" .. modename .. "ModeSep"] =

@@ -17,6 +17,7 @@
 ---@field separator_style "default" | "round" | "block"  | "arrow"
 ---@field overriden_modules ?table  override statusline modules
 ---@field lualine boolean set it true if you want to use theme's lualine highlights works only for default and minimal
+---@field lsprogress_len integer Length of Lsp Progress
 
 --- NvChad tabufline options
 --- Hover on individual properties for more details
@@ -37,6 +38,8 @@
 ---@alias NvChadCheatsheet table<string, table<NvChadModes, table<string, table<string | table>>>>>
 
 ---@alias NvChadModes string
+
+---@alias StringFunc fun():string
 
 --- NvChad Lsp function signature options
 --- Hover on individual properties for more details

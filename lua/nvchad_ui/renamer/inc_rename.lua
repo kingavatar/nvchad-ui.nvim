@@ -46,25 +46,22 @@ local function buf_is_visible(bufnr)
   return false
 end
 
+---@param result table<integer,{uri:string, range:{start: {character: integer, line:integer}, end:{character:integer, line:integer}}}>
 local function cache_lines(result)
   ---@type table<integer, table<integer, {bufnr: integer, end_col: integer, is_visible: boolean, start_col: integer, text: string}[]>>
   local cached_lines = vim.defaulttable()
-  ---@diagnostic disable-next-line: no-unknown
   for _, res in ipairs(result) do
-    ---@diagnostic disable-next-line: no-unknown
     local range = res.range
     -- E.g. sumneko_lua sends ranges across multiple lines when a table value is a function, skip this range
     if range.start.line == range["end"].line then
       local bufnr = vim.uri_to_bufnr(res.uri)
       local is_visible = buf_is_visible(bufnr)
-      ---@type number
       local line_nr = range.start.line
       -- Make sure buffer is loaded before retrieving the line
       if not api.nvim_buf_is_loaded(bufnr) then
         vim.fn.bufload(bufnr)
       end
       local line = api.nvim_buf_get_lines(bufnr, line_nr, line_nr + 1, false)[1]
-      ---@type integer, integer
       local start_col, end_col = range.start.character, range["end"].character
       local line_info =
         { text = line, start_col = start_col, end_col = end_col, bufnr = bufnr, is_visible = is_visible }
@@ -173,19 +170,17 @@ local function incremental_rename_preview(preview_bufnr, old_name)
   --   return M.config.input_buffer ~= nil and 2
   -- end
 
+  ---@param line_info table<integer, {is_visible: boolean, start_col: integer, end_col: integer}>
   local function apply_highlights_fn(bufnr, line_nr, line_info)
     local hl_positions = {}
 
-    ---@diagnostic disable-next-line: no-unknown
     for idx, info in ipairs(line_info) do
       if info.is_visible then
         -- Use nvim_buf_set_text instead of nvim_buf_set_lines to preserve ext-marks
         api.nvim_buf_set_text(bufnr, line_nr, info.start_col, line_nr, info.end_col, { new_name })
         state.cached_lines[bufnr][line_nr][idx].end_col = info.start_col + #new_name
         table.insert(hl_positions, {
-          ---@type integer
           start_col = info.start_col,
-          ---@type integer
           end_col = info.start_col + #new_name,
         })
       end
