@@ -19,9 +19,7 @@ local lualine_hl = ""
 
 local M = {}
 
-local sepR = function(ll_hl)
-  return "%#St_sep_r" .. ll_hl .. "#" .. separators["right"] .. " %#ST_EmptySpace#"
-end
+local sepR = function(ll_hl) return "%#St_sep_r" .. ll_hl .. "#" .. separators["right"] .. " %#ST_EmptySpace#" end
 
 local function gen_block(icon, txt, sep_l_hlgroup, iconHl_group, txt_hl_group, ll_hl)
   return sep_l_hlgroup .. sep_l .. iconHl_group .. icon .. " " .. txt_hl_group .. " " .. txt .. sepR(ll_hl)
@@ -88,9 +86,7 @@ end
 
 M.git = function()
   ---@diagnostic disable-next-line: undefined-field
-  if not vim.b.gitsigns_head or vim.b.gitsigns_git_status then
-    return ""
-  end
+  if not vim.b.gitsigns_head or vim.b.gitsigns_git_status then return "" end
 
   ---@type { added: integer , changed: integer , head: integer , removed: integer  }
   ---@diagnostic disable-next-line: undefined-field
@@ -106,16 +102,12 @@ end
 
 -- LSP STUFF
 M.LSP_progress = function()
-  if not rawget(vim, "lsp") then
-    return ""
-  end
+  if not rawget(vim, "lsp") then return "" end
 
   ---@type { message: string, percentage: integer, title: string }
   local Lsp = vim.lsp.util.get_progress_messages()[1]
 
-  if vim.o.columns < 120 or not Lsp then
-    return ""
-  end
+  if vim.o.columns < 120 or not Lsp then return "" end
 
   local msg = Lsp.message or ""
   local percentage = Lsp.percentage or 0
@@ -125,17 +117,13 @@ M.LSP_progress = function()
   local frame = math.floor(ms / 120) % #spinners
   local content = string.format(" %%<%s %s %s (%s%%%%) ", spinners[frame + 1], title, msg, percentage)
 
-  if config.lsprogress_len then
-    content = string.sub(content, 1, config.lsprogress_len)
-  end
+  if config.lsprogress_len then content = string.sub(content, 1, config.lsprogress_len) end
 
   return ("%#St_LspProgress#" .. content) or ""
 end
 
 M.LSP_Diagnostics = function()
-  if not rawget(vim, "lsp") then
-    return ""
-  end
+  if not rawget(vim, "lsp") then return "" end
 
   ---@type integer | string
   local errors = #vim.diagnostic.get(0, { severity = vim.diagnostic.severity.ERROR })
@@ -234,9 +222,7 @@ M.run = function()
   ---@type table
   local modules = require "nvchad_ui.statusline.minimal"
 
-  if options.overriden_modules then
-    modules = vim.tbl_deep_extend("force", modules, options.overriden_modules())
-  end
+  if options.overriden_modules then modules = vim.tbl_deep_extend("force", modules, options.overriden_modules()) end
 
   local m = vim.api.nvim_get_mode().mode
   lualine_hl = use_lualine() and M.modes[m][3] or ""

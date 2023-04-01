@@ -43,8 +43,7 @@ M.apply_highlights = function()
     M.highlights.NvChAsciiHeader = {
       fg = colors.special,
     }
-    local bgcols =
-      { "blue", "red", "green", "yellow", "orange", "baby_pink", "purple", "white", "cyan", "vibrant_green", "teal" }
+    local bgcols = { "blue", "red", "green", "yellow", "orange", "baby_pink", "purple", "white", "cyan", "vibrant_green", "teal" }
 
     for _, value in ipairs(bgcols) do
       ---@diagnostic disable-next-line: no-unknown

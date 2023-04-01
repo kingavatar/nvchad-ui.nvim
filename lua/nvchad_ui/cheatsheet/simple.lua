@@ -7,9 +7,7 @@ local genStr = string.rep
 
 vim.api.nvim_create_autocmd("BufWinLeave", {
   callback = function()
-    if vim.bo.ft == "nvcheatsheet" then
-      vim.g.nvdash_displayed = false
-    end
+    if vim.bo.ft == "nvcheatsheet" then vim.g.nvdash_displayed = false end
   end,
 })
 
@@ -69,9 +67,7 @@ return function()
 
   local horiz_index = 0
 
-  local function Capitalize(str)
-    return (str:gsub("^%l", string.upper))
-  end
+  local function Capitalize(str) return (str:gsub("^%l", string.upper)) end
 
   local function addPadding(str)
     local padding = largest_str + 30 - #str
@@ -82,9 +78,7 @@ return function()
 
   -- sort table
   local sorted_tb_keys = vim.tbl_keys(cards)
-  table.sort(sorted_tb_keys, function(a, b)
-    return a > b
-  end)
+  table.sort(sorted_tb_keys, function(a, b) return a > b end)
 
   -- Store content in a table in a formatted way
   for _, card_name in pairs(sorted_tb_keys) do
@@ -109,18 +103,14 @@ return function()
 
         result[#result + 1] = "   " .. txt .. "   "
 
-        if mapping_txt_endIndex == 0 then
-          mapping_txt_endIndex = #result[#result]
-        end
+        if mapping_txt_endIndex == 0 then mapping_txt_endIndex = #result[#result] end
 
         lineNumsDesc[#lineNumsDesc + 1] = "mapping"
 
         result[#result + 1] = padding_chars
         lineNumsDesc[#lineNumsDesc + 1] = "paddingBlock"
 
-        if horiz_index == 0 then
-          horiz_index = math.floor(centerPoint - math.floor(#map / 2))
-        end
+        if horiz_index == 0 then horiz_index = math.floor(centerPoint - math.floor(#map / 2)) end
       end
     end
 

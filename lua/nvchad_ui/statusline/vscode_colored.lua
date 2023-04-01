@@ -59,9 +59,7 @@ end
 
 M.git = function()
   ---@diagnostic disable-next-line: undefined-field
-  if not vim.b.gitsigns_head or vim.b.gitsigns_git_status then
-    return ""
-  end
+  if not vim.b.gitsigns_head or vim.b.gitsigns_git_status then return "" end
 
   ---@diagnostic disable-next-line: undefined-field
   return "  " .. vim.b.gitsigns_status_dict.head .. "  "
@@ -69,37 +67,28 @@ end
 
 M.gitchanges = function()
   ---@diagnostic disable-next-line: undefined-field
-  if not vim.b.gitsigns_head or vim.b.gitsigns_git_status or vim.o.columns < 120 then
-    return ""
-  end
+  if not vim.b.gitsigns_head or vim.b.gitsigns_git_status or vim.o.columns < 120 then return "" end
 
   ---@type { added: integer , changed: integer , head: integer , removed: integer  }
   ---@diagnostic disable-next-line: undefined-field
   local git_status = vim.b.gitsigns_status_dict
 
   local added = (git_status.added and git_status.added ~= 0) and ("%#St_lspInfo#  " .. git_status.added .. " ") or ""
-  local changed = (git_status.changed and git_status.changed ~= 0)
-      and ("%#St_lspWarning#  " .. git_status.changed .. " ")
+  local changed = (git_status.changed and git_status.changed ~= 0) and ("%#St_lspWarning#  " .. git_status.changed .. " ")
     or ""
-  local removed = (git_status.removed and git_status.removed ~= 0)
-      and ("%#St_lspError#  " .. git_status.removed .. " ")
-    or ""
+  local removed = (git_status.removed and git_status.removed ~= 0) and ("%#St_lspError#  " .. git_status.removed .. " ") or ""
 
   return (added .. changed .. removed) ~= "" and (added .. changed .. removed .. " | ") or ""
 end
 
 -- LSP STUFF
 M.LSP_progress = function()
-  if not rawget(vim, "lsp") then
-    return ""
-  end
+  if not rawget(vim, "lsp") then return "" end
 
   ---@type { message: string, percentage: integer, title: string }
   local Lsp = vim.lsp.util.get_progress_messages()[1]
 
-  if vim.o.columns < 120 or not Lsp then
-    return ""
-  end
+  if vim.o.columns < 120 or not Lsp then return "" end
 
   local msg = Lsp.message or ""
   local percentage = Lsp.percentage or 0
@@ -109,17 +98,13 @@ M.LSP_progress = function()
   local frame = math.floor(ms / 120) % #spinners
   local content = string.format(" %%<%s %s %s (%s%%%%) ", spinners[frame + 1], title, msg, percentage)
 
-  if config.lsprogress_len then
-    content = string.sub(content, 1, config.lsprogress_len)
-  end
+  if config.lsprogress_len then content = string.sub(content, 1, config.lsprogress_len) end
 
   return ("%#St_LspProgress#" .. content) or ""
 end
 
 M.LSP_Diagnostics = function()
-  if not rawget(vim, "lsp") then
-    return "%#St_lspError#  0 %#St_lspWarning# 0"
-  end
+  if not rawget(vim, "lsp") then return "%#St_lspError#  0 %#St_lspWarning# 0" end
 
   ---@type integer | string
   local errors = #vim.diagnostic.get(0, { severity = vim.diagnostic.severity.ERROR })
@@ -138,9 +123,7 @@ M.LSP_Diagnostics = function()
   return vim.o.columns > 140 and errors .. warnings .. hints .. info or ""
 end
 
-M.filetype = function()
-  return vim.bo.ft == "" and "%#St_ft# {} plain text  " or "%#St_ft#{} " .. vim.bo.ft .. " "
-end
+M.filetype = function() return vim.bo.ft == "" and "%#St_ft# {} plain text  " or "%#St_ft#{} " .. vim.bo.ft .. " " end
 
 M.LSP_status = function()
   if rawget(vim, "lsp") then
@@ -162,9 +145,7 @@ M.run = function()
   ---@type table
   local modules = require "nvchad_ui.statusline.vscode_colored"
 
-  if options.overriden_modules then
-    modules = vim.tbl_deep_extend("force", modules, options.overriden_modules())
-  end
+  if options.overriden_modules then modules = vim.tbl_deep_extend("force", modules, options.overriden_modules()) end
 
   return table.concat {
     modules.mode(),

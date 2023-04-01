@@ -18,9 +18,7 @@ headerAscii[#headerAscii + 1] = emmptyLine
 
 api.nvim_create_autocmd("BufWinLeave", {
   callback = function()
-    if vim.bo.ft == "nvdash" then
-      vim.g.nvdash_displayed = false
-    end
+    if vim.bo.ft == "nvdash" then vim.g.nvdash_displayed = false end
   end,
 })
 
@@ -53,9 +51,7 @@ M.open = function(buf)
     end
 
     -- This should not happen but lets handle it anyway
-    if win == nil then
-      return
-    end
+    if win == nil then return end
 
     vim.opt_local.filetype = "nvdash"
     vim.g.nvdash_displayed = true
@@ -202,9 +198,7 @@ M.open = function(buf)
     vim.opt_local.wrap = false
     vim.opt_local.cul = false
 
-    if was_lazy_open then
-      require("lazy").show()
-    end
+    if was_lazy_open then require("lazy").show() end
   end
 end
 
@@ -212,9 +206,7 @@ M.lazyVim_callback = function()
   local stats = require("lazy").stats()
   local ms = (math.floor(stats.startuptime * 100 + 0.5) / 100)
   footer = "⚡ Neovim loaded " .. stats.count .. " plugins in " .. ms .. "ms"
-  if options.load_on_startup then
-    M.open()
-  end
+  if options.load_on_startup then M.open() end
 end
 
 return M

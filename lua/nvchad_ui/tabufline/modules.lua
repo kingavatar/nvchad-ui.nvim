@@ -5,9 +5,7 @@ local fn = vim.fn
 
 -- dofile(vim.g.base46_cache .. "tbline")
 
-local isBufValid = function(bufnr)
-  return vim.api.nvim_buf_is_valid(bufnr) and vim.bo[bufnr].buflisted
-end
+local isBufValid = function(bufnr) return vim.api.nvim_buf_is_valid(bufnr) and vim.bo[bufnr].buflisted end
 
 ---------------------------------------------------------- btn onclick functions ----------------------------------------------
 
@@ -37,9 +35,7 @@ end
 
 local function getNvimTreeWidth()
   for _, win in pairs(api.nvim_tabpage_list_wins(0)) do
-    if vim.bo[api.nvim_win_get_buf(win)].ft == "NvimTree" then
-      return api.nvim_win_get_width(win) + 1
-    end
+    if vim.bo[api.nvim_win_get_buf(win)].ft == "NvimTree" then return api.nvim_win_get_width(win) + 1 end
   end
   return 0
 end
@@ -159,9 +155,7 @@ M.bufferlist = function()
   for _, bufnr in ipairs(vim.t.bufs) do
     if isBufValid(bufnr) then
       if ((#buffers + 1) * 21) > available_space then
-        if has_current then
-          break
-        end
+        if has_current then break end
 
         vim.g.bufirst = vim.g.bufirst + 1
         table.remove(buffers, 1)
@@ -192,8 +186,7 @@ M.tablist = function()
     local new_tabtn = "%#TblineTabNewBtn#" .. "%@TbNewTab@  %X"
     local tabstoggleBtn = "%@TbToggleTabs@ %#TBTabTitle# TABS %X"
 
-    return vim.g.TbTabsToggled == 1 and tabstoggleBtn:gsub("()", { [36] = " " })
-      or new_tabtn .. tabstoggleBtn .. result
+    return vim.g.TbTabsToggled == 1 and tabstoggleBtn:gsub("()", { [36] = " " }) or new_tabtn .. tabstoggleBtn .. result
   end
 end
 
@@ -213,9 +206,7 @@ M.run = function()
   local options = require("nvchad_ui.config").options.tabufline
 
   -- merge user modules :D
-  if options.overriden_modules then
-    modules = vim.tbl_deep_extend("force", modules, options.overriden_modules())
-  end
+  if options.overriden_modules then modules = vim.tbl_deep_extend("force", modules, options.overriden_modules()) end
 
   local result = modules.bufferlist() .. (modules.tablist() or "") .. modules.buttons()
   return (vim.g.nvimtree_side == "left") and modules.CoverNvimTree() .. result or result .. modules.CoverNvimTree()

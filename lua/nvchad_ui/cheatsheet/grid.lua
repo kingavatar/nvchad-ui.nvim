@@ -6,9 +6,7 @@ local mappings_tb = require("nvchad_ui.config").options.mappings
 
 vim.api.nvim_create_autocmd("BufWinLeave", {
   callback = function()
-    if vim.bo.ft == "nvcheatsheet" then
-      vim.g.nvdash_displayed = false
-    end
+    if vim.bo.ft == "nvcheatsheet" then vim.g.nvdash_displayed = false end
   end,
 })
 
@@ -26,9 +24,7 @@ local ascii = {
 
 local function close(buf)
   vim.schedule(function()
-    if buf and vim.api.nvim_buf_is_valid(buf) then
-      vim.api.nvim_buf_delete(buf, { force = true })
-    end
+    if buf and vim.api.nvim_buf_is_valid(buf) then vim.api.nvim_buf_delete(buf, { force = true }) end
   end)
 end
 
@@ -37,9 +33,7 @@ return function()
   local buf = vim.api.nvim_create_buf(false, true)
 
   -- close nvchad buffer by pressing q
-  vim.keymap.set("n", "q", function()
-    close(buf)
-  end, { nowait = true, buffer = buf })
+  vim.keymap.set("n", "q", function() close(buf) end, { nowait = true, buffer = buf })
 
   -- add left padding (strs) to ascii so it looks centered
   ---@type string[]
@@ -99,9 +93,7 @@ return function()
       local padding_left = math.floor((column_width - #card_name) / 2)
 
       -- center the heading
-      card_name = string.rep(" ", padding_left)
-        .. card_name
-        .. string.rep(" ", column_width - #card_name - padding_left)
+      card_name = string.rep(" ", padding_left) .. card_name .. string.rep(" ", column_width - #card_name - padding_left)
 
       card_headings[#card_headings + 1] = card_name
 
@@ -152,9 +144,7 @@ return function()
 
   local cards_headings_sorted = vim.tbl_keys(cards)
 
-  table.sort(cards_headings_sorted, function(first, second)
-    return first:gsub("%s*", "") < second:gsub("%s*", "")
-  end)
+  table.sort(cards_headings_sorted, function(first, second) return first:gsub("%s*", "") < second:gsub("%s*", "") end)
 
   -- imitate masonry layout
   for _, heading in pairs(cards_headings_sorted) do

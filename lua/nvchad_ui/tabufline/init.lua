@@ -4,14 +4,10 @@ local api = vim.api
 M.bufilter = function()
   local bufs = vim.t.bufs or nil
 
-  if not bufs then
-    return {}
-  end
+  if not bufs then return {} end
 
   for i = #bufs, 1, -1 do
-    if not vim.api.nvim_buf_is_valid(bufs[i]) and vim.bo[bufs[i]].buflisted then
-      table.remove(bufs, i)
-    end
+    if not vim.api.nvim_buf_is_valid(bufs[i]) and vim.bo[bufs[i]].buflisted then table.remove(bufs, i) end
   end
 
   return bufs
@@ -53,17 +49,13 @@ end
 M.closeAllBufs = function(action)
   local bufs = vim.t.bufs
 
-  if action == "closeTab" then
-    vim.cmd "tabclose"
-  end
+  if action == "closeTab" then vim.cmd "tabclose" end
 
   for _, buf in ipairs(bufs) do
     M.close_buffer(buf)
   end
 
-  if action ~= "closeTab" then
-    vim.cmd "enew"
-  end
+  if action ~= "closeTab" then vim.cmd "enew" end
 end
 
 M.move_buf = function(n)

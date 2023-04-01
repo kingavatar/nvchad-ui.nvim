@@ -549,9 +549,7 @@ M.apply_highlights = function(theme)
   gen_hl("cwd", "bright_orange")
   gen_hl("lsp", "green", "a")
 
-  if M.can_use_lualine then
-    use_lualine_highlights(theme)
-  end
+  if M.can_use_lualine then use_lualine_highlights(theme) end
 end
 
 return M

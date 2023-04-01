@@ -38,9 +38,7 @@ end
 local function buf_is_visible(bufnr)
   if api.nvim_buf_is_loaded(bufnr) then
     for _, win in ipairs(api.nvim_tabpage_list_wins(0)) do
-      if api.nvim_win_get_buf(win) == bufnr then
-        return true
-      end
+      if api.nvim_win_get_buf(win) == bufnr then return true end
     end
   end
   return false
@@ -58,13 +56,10 @@ local function cache_lines(result)
       local is_visible = buf_is_visible(bufnr)
       local line_nr = range.start.line
       -- Make sure buffer is loaded before retrieving the line
-      if not api.nvim_buf_is_loaded(bufnr) then
-        vim.fn.bufload(bufnr)
-      end
+      if not api.nvim_buf_is_loaded(bufnr) then vim.fn.bufload(bufnr) end
       local line = api.nvim_buf_get_lines(bufnr, line_nr, line_nr + 1, false)[1]
       local start_col, end_col = range.start.character, range["end"].character
-      local line_info =
-        { text = line, start_col = start_col, end_col = end_col, bufnr = bufnr, is_visible = is_visible }
+      local line_info = { text = line, start_col = start_col, end_col = end_col, bufnr = bufnr, is_visible = is_visible }
 
       -- Same line was already seen
       if cached_lines[bufnr][line_nr] then
@@ -90,9 +85,7 @@ local function filter_duplicates(cached_lines)
         local start_col, end_col = line_info[1].start_col, line_info[1].end_col
         local filtered_lines = { line_info[1] }
         for i = 2, len do
-          if line_info[i].start_col ~= start_col and line_info[i].end_col ~= end_col then
-            filtered_lines[i] = line_info[i]
-          end
+          if line_info[i].start_col ~= start_col and line_info[i].end_col ~= end_col then filtered_lines[i] = line_info[i] end
         end
         cached_lines[buf][line_nr] = filtered_lines
       end
@@ -107,9 +100,7 @@ local function fetch_lsp_references(bufnr)
     bufnr = bufnr,
   }
   ---@diagnostic disable-next-line: no-unknown
-  clients = vim.tbl_filter(function(client)
-    return client.supports_method "textDocument/rename"
-  end, clients)
+  clients = vim.tbl_filter(function(client) return client.supports_method "textDocument/rename" end, clients)
 
   if #clients == 0 then
     set_error "[inc-rename] No active language server with rename capability"
@@ -261,9 +252,7 @@ M.inc_rename_execute = function()
   else
     local newName = vim.trim(vim.fn.getline ".")
     tear_down()
-    if #newName > 0 and newName ~= state.curr_name then
-      perform_lsp_rename(newName)
-    end
+    if #newName > 0 and newName ~= state.curr_name then perform_lsp_rename(newName) end
   end
 end
 
@@ -277,9 +266,7 @@ M.inc_rename_initialize = function(win, curr_buf, curr_win, curr_name)
   state.curr_name = curr_name
   api.nvim_create_autocmd("TextChangedI", {
     group = state.preview_ns,
-    callback = function()
-      incremental_rename_preview(curr_buf)
-    end,
+    callback = function() incremental_rename_preview(curr_buf) end,
   })
 end
 
