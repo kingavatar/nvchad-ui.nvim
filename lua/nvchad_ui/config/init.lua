@@ -158,4 +158,6 @@ function M.setup(opts)
   end
 end
 
+M.reset = function() require("nvchad_ui.colors").on_colorscheme_change(true) end
+
 return M

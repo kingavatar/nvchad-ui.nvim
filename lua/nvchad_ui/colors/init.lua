@@ -13,8 +13,9 @@ local can_use_lualine = false
 local is_startup = true
 local not_loaded_on_startup = true
 
-M.on_colorscheme_change = function()
-  if is_startup then
+M.on_colorscheme_change = function(reset)
+  reset = reset or false
+  if is_startup or reset then
     is_startup = false
     local settings_cache_path = vim.g.base46_cache .. "settings"
 
@@ -26,7 +27,7 @@ M.on_colorscheme_change = function()
       file:close()
     end
     local hash = require("nvchad_ui.util").hash { options, vim.g.colors_name or "", vim.o.bg }
-    if cached ~= hash then
+    if cached ~= hash or reset then
       M.load_all_highlights(true)
       file = io.open(settings_cache_path, "wb")
       if file then
