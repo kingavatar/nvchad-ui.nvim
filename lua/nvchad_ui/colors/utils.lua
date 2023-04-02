@@ -22,9 +22,7 @@ function M.extract_highlight_colors(color_group, scope)
     color.sp = string.format("#%06x", color.special)
     color.special = nil
   end
-  if scope then
-    return color[scope]
-  end
+  if scope then return color[scope] end
   return color
 end
 
@@ -39,9 +37,7 @@ local is_valid_filename = require("nvchad_ui.util").is_valid_filename
 ---@param theme_name string
 ---@return table theme definition from module
 local function Load_theme(theme_name)
-  if not is_valid_filename(theme_name) then
-    error "Invalid FileName for lualine theme"
-  end
+  if not is_valid_filename(theme_name) then error "Invalid FileName for lualine theme" end
   local retval = {}
   local path = table.concat { "lua/lualine/themes/", theme_name, ".lua" }
   local files = vim.api.nvim_get_runtime_file(path, true)
@@ -59,9 +55,7 @@ local function Load_theme(theme_name)
   else
     -- put entries from user config path in front
     local user_config_path = vim.fn.stdpath "config"
-    table.sort(files, function(a, b)
-      return vim.startswith(a, user_config_path) or not vim.startswith(b, user_config_path)
-    end)
+    table.sort(files, function(a, b) return vim.startswith(a, user_config_path) or not vim.startswith(b, user_config_path) end)
     -- More then 1 found . Use the first one that isn't in lualines repo
     local lualine_repo_pattern = table.concat({ "lualine.nvim", "lua", "lualine" }, M.sep)
     local file_found = false
@@ -87,15 +81,11 @@ M.get_lualine_colors = function()
   local color_name = vim.g.colors_name
   if color_name then
     -- All base16 colorschemes share the same theme
-    if "base16" == color_name:sub(1, 6) then
-      color_name = "base16"
-    end
+    if "base16" == color_name:sub(1, 6) then color_name = "base16" end
     -- Check if there's a theme for current colorscheme
     -- If there is load that instead of generating a new one
     local ok, theme = pcall(Load_theme, color_name)
-    if ok and theme then
-      return theme
-    end
+    if ok and theme then return theme end
   end
   return {}
 end
@@ -139,9 +129,7 @@ end
 ---@param color2 string | nil
 ---@return string | nil
 function M.mixColors(color1, color2)
-  if color1 == nil or color2 == nil then
-    return nil
-  end
+  if color1 == nil or color2 == nil then return nil end
   -- Convert the colors from hex to RGB
   local r1, g1, b1 = hex2rgb(color1)
   local r2, g2, b2 = hex2rgb(color2)
@@ -168,9 +156,7 @@ end
 
 ---@source https://github.com/akinsho/bufferline.nvim/blob/main/lua/bufferline/colors.lua#L16
 
-local function alter(attr, percent)
-  return math.floor(attr * (100 + percent) / 100)
-end
+local function alter(attr, percent) return math.floor(attr * (100 + percent) / 100) end
 
 ---@source https://github.com/akinsho/bufferline.nvim/blob/main/lua/bufferline/colors.lua#L18
 
@@ -179,13 +165,9 @@ end
 ---@param percent number
 ---@return string
 M.shade_color = function(color, percent)
-  if not color then
-    return "NONE"
-  end
+  if not color then return "NONE" end
   local r, g, b = hex2rgb(color)
-  if not r or not g or not b then
-    return "NONE"
-  end
+  if not r or not g or not b then return "NONE" end
   r, g, b = alter(r, percent), alter(g, percent), alter(b, percent)
   r, g, b = math.min(r, 255), math.min(g, 255), math.min(b, 255)
   return string.format("#%02x%02x%02x", r, g, b)
@@ -199,14 +181,10 @@ end
 --- 2. https://stackoverflow.com/a/596243
 ---@param hex string
 M.color_is_bright = function(hex)
-  if not hex then
-    return false
-  end
+  if not hex then return false end
   local r, g, b = hex2rgb(hex)
   -- If any of the colors are missing return false
-  if not r or not g or not b then
-    return false
-  end
+  if not r or not g or not b then return false end
   -- Counting the perceptive luminance - human eye favors green color
   local luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255
   return luminance > 0.5 -- if > 0.5 Bright colors, black font, otherwise Dark colors, white font

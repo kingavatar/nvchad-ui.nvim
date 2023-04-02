@@ -3,7 +3,7 @@ local M = {}
 
 local api = vim.api
 vim.g.base46_cache = vim.fn.stdpath "data" .. "/nvchad/base46/"
-local callback = false
+local callback_not_happened = true
 
 --- NvChad UI options
 --- Hover on individual properties for more details
@@ -70,12 +70,18 @@ function M.setup(opts)
   api.nvim_create_autocmd("ColorScheme", {
     group = "nvchad_ui",
     callback = function()
-      callback = true
-      colors.load_all_highlights()
+      callback_not_happened = false
+      colors.on_colorscheme_change()
     end,
   })
 
-  if not vim.loop.fs_stat(vim.g.base46_cache) then vim.fn.mkdir(vim.g.base46_cache, "p") end
+  if not vim.loop.fs_stat(vim.g.base46_cache) then
+    vim.fn.mkdir(vim.g.base46_cache, "p")
+    colors.load_all_highlights(true)
+  else
+    --- if colorscheme is not set before this plugin will run default previous theme
+    if callback_not_happened then colors.load_on_startup() end
+  end
 
   vim.opt.statusline = "%!v:lua.require('nvchad_ui.statusline." .. M.options.statusline.theme .. "').run()"
   vim.opt.laststatus = 3
@@ -150,9 +156,6 @@ function M.setup(opts)
 
     M.options.mappings = vim.tbl_deep_extend("force", require "nvchad_ui.cheatsheet.lazyvim", M.options.mappings)
   end
-
-  --- if colorscheme is not set before this plugin will run default tokyonight theme
-  if not callback then colors.load_all_highlights() end
 end
 
 return M

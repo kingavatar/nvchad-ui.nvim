@@ -10,8 +10,38 @@ local g = vim.g
 
 g.toggle_theme_icon = "   "
 local can_use_lualine = false
+local is_startup = true
+local not_loaded_on_startup = true
 
-M.load_all_highlights = function()
+M.on_colorscheme_change = function()
+  if is_startup then
+    is_startup = false
+    local settings_cache_path = vim.g.base46_cache .. "settings"
+
+    ---@type any
+    local cached = nil
+    local file = io.open(settings_cache_path)
+    if file then
+      cached = file:read()
+      file:close()
+    end
+    local hash = require("nvchad_ui.util").hash { options, vim.g.colors_name or "", vim.o.bg }
+    if cached ~= hash then
+      M.load_all_highlights(true)
+      file = io.open(settings_cache_path, "wb")
+      if file then
+        file:write(hash)
+        file:close()
+      end
+    else
+      if not_loaded_on_startup then M.load_on_startup() end
+    end
+  else
+    M.load_all_highlights(false)
+  end
+end
+
+M.load_all_highlights = function(save_to_cache)
   if vim.g.colors_name == nil then require("nvchad_ui.colors.default").apply_default() end
   statusline.apply_highlights(options.statusline.theme)
   can_use_lualine = statusline.can_use_lualine
@@ -29,7 +59,7 @@ M.load_all_highlights = function()
     renamer.highlights
   )
   utils.load(groups)
-  utils.saveStr_to_cache(groups)
+  if save_to_cache then utils.saveStr_to_cache(groups) end
 end
 
 M.toggle_theme = function()
@@ -56,6 +86,7 @@ M.can_use_lualine = function() return can_use_lualine end
 M.load_on_startup = function()
   can_use_lualine = options.statusline.lualine
   dofile(g.base46_cache .. "default")
+  not_loaded_on_startup = false
 end
 
 return M
