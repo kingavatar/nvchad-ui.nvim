@@ -6,6 +6,7 @@
 --- NvChad statusline options
 --- Hover on individual properties for more details
 ---@class NvChadStatusline
+---@field enabled boolean enable or disable statusline
 --- Set theme for statusline
 --- Some seperators are present only default and minimal style
 ---@field theme statusline_theme

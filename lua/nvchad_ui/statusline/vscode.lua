@@ -1,5 +1,6 @@
 local fn = vim.fn
 local options = require("nvchad_ui.config").options.statusline
+local use_lazyvim = require("nvchad_ui.config").options.lazyVim
 
 local M = {}
 
@@ -97,7 +98,7 @@ M.LSP_progress = function()
   local frame = math.floor(ms / 120) % #spinners
   local content = string.format(" %%<%s %s %s (%s%%%%) ", spinners[frame + 1], title, msg, percentage)
 
-  if config.lsprogress_len then content = string.sub(content, 1, config.lsprogress_len) end
+  if options.lsprogress_len then content = string.sub(content, 1, options.lsprogress_len) end
 
   return content or ""
 end
@@ -153,7 +154,7 @@ M.run = function()
     modules.LSP_Diagnostics(),
 
     "%=",
-    modules.LSP_progress(),
+    not use_lazyvim and modules.LSP_progress() or "",
     "%=",
 
     modules.gitchanges(),

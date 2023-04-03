@@ -20,6 +20,7 @@ local callback_not_happened = true
 ---@field mappings NvChadCheatsheet
 M.defaults = {
   statusline = {
+    enabled = true,
     theme = "default",
     separator_style = "default",
     overriden_modules = nil,
@@ -83,8 +84,11 @@ function M.setup(opts)
     if callback_not_happened then colors.load_on_startup() end
   end
 
-  vim.opt.statusline = "%!v:lua.require('nvchad_ui.statusline." .. M.options.statusline.theme .. "').run()"
-  vim.opt.laststatus = 3
+  if M.options.statusline.enabled then
+    vim.opt.statusline = "%!v:lua.require('nvchad_ui.statusline." .. M.options.statusline.theme .. "').run()"
+    vim.opt.laststatus = 3
+  end
+
   if M.options.tabufline.enabled then require "nvchad_ui.tabufline.lazyload" end
 
   -- Command to toggle NvDash

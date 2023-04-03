@@ -210,7 +210,7 @@ M.apply_highlights = function(theme)
 
   M.vscode = {
     StatusLine = {
-      fg = colors.light_grey,
+      fg = colors.white,
       bg = colors.statusline_bg,
     },
 
@@ -227,7 +227,7 @@ M.apply_highlights = function(theme)
 
   M.vscode_colored = {
     StatusLine = {
-      fg = colors.light_grey,
+      fg = colors.white,
       bg = colors.statusline_bg,
     },
 
