@@ -86,8 +86,9 @@ M.can_use_lualine = function() return can_use_lualine end
 ---Lazylaod on startup from cache
 M.load_on_startup = function()
   can_use_lualine = options.statusline.lualine
-  dofile(g.base46_cache .. "default")
   not_loaded_on_startup = false
+  local ok, _ = pcall(dofile, g.base46_cache .. "default")
+  if not ok then M.load_all_highlights(true) end
 end
 
 return M

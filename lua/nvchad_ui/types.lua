@@ -8,9 +8,9 @@
 ---@class NvChadStatusline
 ---@field enabled boolean enable or disable statusline
 --- Set theme for statusline
---- Some seperators are present only default and minimal style
+--- Some separators are present only default and minimal style
 ---@field theme statusline_theme
---- Seperators :
+--- Separators :
 ---  - default : "" "" Will only work for default Statusline Theme
 ---  - "round" : "" "" Will only work for default and minimal Statusline Theme
 ---  - "block" : "█" "█" Will only work for default and minimal Statusline Theme
