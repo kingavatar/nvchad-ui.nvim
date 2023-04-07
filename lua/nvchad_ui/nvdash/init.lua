@@ -18,7 +18,10 @@ headerAscii[#headerAscii + 1] = emmptyLine
 
 api.nvim_create_autocmd("BufWinLeave", {
   callback = function()
-    if vim.bo.ft == "nvdash" then vim.g.nvdash_displayed = false end
+    if vim.bo.ft == "nvdash" then
+      vim.g.nvdash_displayed = false
+      if package.loaded["drop"] then require("drop").hide() end
+    end
   end,
 })
 
