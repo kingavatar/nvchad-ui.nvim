@@ -30,6 +30,7 @@ M.defaults = {
     enabled = true,
     lazyload = true,
     overriden_modules = nil,
+    show_numbers = true,
   },
   theme_toggle = nil,
   nvdash = {

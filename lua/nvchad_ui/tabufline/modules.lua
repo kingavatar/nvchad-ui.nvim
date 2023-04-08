@@ -2,6 +2,8 @@ local api = vim.api
 ---@type boolean ,{get_icon: fun(string) : string, string}
 local devicons_present, devicons = pcall(require, "nvim-web-devicons")
 local fn = vim.fn
+local options = require("nvchad_ui.config").options.tabufline
+-- local tabufline_config = require("core.utils").load_config().ui.tabufline
 
 -- dofile(vim.g.base46_cache .. "tbline")
 
@@ -111,13 +113,23 @@ local function styleBufferTab(nr)
   local name = (#api.nvim_buf_get_name(nr) ~= 0) and fn.fnamemodify(api.nvim_buf_get_name(nr), ":t") or " No Name "
   name = "%" .. nr .. "@TbGoToBuf@" .. add_fileInfo(name, nr) .. "%X"
 
+  -- add numbers to each tab in tabufline
+  if options.show_numbers then
+    for index, value in ipairs(vim.t.bufs) do
+      if nr == value then
+        name = name .. index
+        break
+      end
+    end
+  end
+
   -- color close btn for focused / hidden  buffers
   if nr == api.nvim_get_current_buf() then
-    close_btn = (vim.bo[0].modified and "%" .. nr .. "@TbKillBuf@%#TbLineBufOnModified# ")
+    close_btn = (vim.bo[0].modified and "%" .. nr .. "@TbKillBuf@%#TbLineBufOnModified#  ")
       or ("%#TbLineBufOnClose#" .. close_btn)
     name = "%#TbLineBufOn#" .. name .. close_btn
   else
-    close_btn = (vim.bo[nr].modified and "%" .. nr .. "@TbKillBuf@%#TbBufLineBufOffModified# ")
+    close_btn = (vim.bo[nr].modified and "%" .. nr .. "@TbKillBuf@%#TbBufLineBufOffModified#  ")
       or ("%#TbLineBufOffClose#" .. close_btn)
     name = "%#TbLineBufOff#" .. name .. close_btn
   end
@@ -203,7 +215,6 @@ end
 M.run = function()
   ---@type { CoverNvimTree: StringFunc, bufferlist: StringFunc, buttons: StringFunc , tablist: StringFunc }
   local modules = require "nvchad_ui.tabufline.modules"
-  local options = require("nvchad_ui.config").options.tabufline
 
   -- merge user modules :D
   if options.overriden_modules then modules = vim.tbl_deep_extend("force", modules, options.overriden_modules()) end
@@ -211,4 +222,5 @@ M.run = function()
   local result = modules.bufferlist() .. (modules.tablist() or "") .. modules.buttons()
   return (vim.g.nvimtree_side == "left") and modules.CoverNvimTree() .. result or result .. modules.CoverNvimTree()
 end
+
 return M

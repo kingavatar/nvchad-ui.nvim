@@ -26,6 +26,7 @@
 ---@field enabled boolean enable or disable tabufline
 ---@field lazyload boolean
 ---@field overriden_modules ?table  override tabufline modules
+---@field show_numbers boolean enable or disable numbers
 
 --- NvChad NvDash dashboard options
 --- Hover on individual properties for more details

@@ -205,7 +205,7 @@ M.cwd = function()
   ) or ""
 end
 
-M.pos = function()
+M.cursor_position = function()
   return gen_block(
     "",
     "%l/%c",
@@ -215,8 +215,6 @@ M.pos = function()
     lualine_hl
   )
 end
-
-M.cursor_position = function() end
 
 M.run = function()
   ---@type table
@@ -242,7 +240,7 @@ M.run = function()
     use_lazyvim and modules.lazy_updates() or "",
     modules.LSP_status() or "",
     modules.cwd(),
-    modules.pos(),
+    modules.cursor_position(),
   }
 end
 
